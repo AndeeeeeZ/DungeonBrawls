@@ -1,0 +1,72 @@
+using Unity.VisualScripting;
+using UnityEngine;
+
+public class CharacterMovement : MonoBehaviour
+{
+    [SerializeField]
+    private float stepSize, moveSpeed;
+
+    [SerializeField]
+    private Transform movePoint;
+
+    [SerializeField]
+    private LayerMask obstacleLayer;
+
+    private Character character; 
+
+    private void Start()
+    {
+        // Prevents child moving the parent
+        movePoint.parent = null; 
+        movePoint.position = transform.position;
+        character = GetComponent<Character>();
+        
+        if (character == null)
+        {
+            Debug.Log("Character class not detected"); 
+        }
+    }
+
+    private void Update()
+    {
+        if (transform.position != movePoint.position) 
+            transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
+    }
+
+    // Move the target point
+    public void Move(int x, int y)
+    {
+        Mathf.Clamp(x, -1, 1);
+        Mathf.Clamp(y, -1, 1);
+
+        if (x == 0 && y == 0)
+            return; 
+
+        Vector3 moveLocation = movePoint.position + new Vector3(x, y, movePoint.position.z);
+
+        Collider2D hit = Physics2D.OverlapPoint(moveLocation);
+
+        // TODO: moving this to a different location
+        if (hit != null)
+        {
+            if (hit.CompareTag("Character") && hit)
+            {
+                Character defender = hit.GetComponent<Character>();
+                if (defender != null)
+                {
+                    BattleSystem.ExecuteAttack(character, defender);
+                }
+                else
+                {
+                    Debug.Log("Character component not detected");
+                }
+            }
+        }
+        // Move target point if it's not going into an obstacle
+        else if (!Physics2D.OverlapCircle(moveLocation, 0f, obstacleLayer))
+        {
+            movePoint.Translate(new Vector2(x * stepSize, y * stepSize));
+        }
+
+    }  
+}
