@@ -49,7 +49,7 @@ public class BattleSystem : MonoBehaviour
     public int ExecuteAttack(Character attacker, Character defender)
     {
         int damage = CalculateAttack(attacker, defender);
-        Debug.Log($"{damage} is made");
+        Debug.Log($"{damage} damage is made");
         defender.ReduceHealthBy(damage);
         return damage; 
     }

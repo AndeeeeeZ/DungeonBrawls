@@ -6,8 +6,7 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField]
     private float stepSize, moveSpeed;
 
-    [SerializeField]
-    private Transform movePoint;
+    public Transform movePoint;
 
     [SerializeField]
     private LayerMask obstacleLayer;
@@ -23,7 +22,11 @@ public class CharacterMovement : MonoBehaviour
         
         if (character == null)
         {
-            Debug.Log("Character class not detected"); 
+            Debug.LogWarning("Character missing"); 
+        }
+        if (movePoint == null)
+        {
+            Debug.LogWarning("Movement point missing");
         }
     }
 

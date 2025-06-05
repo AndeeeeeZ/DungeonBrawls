@@ -25,7 +25,8 @@ public class InputSystem : MonoBehaviour
         }
         if (Input.GetKeyDown(Keys.skip))
         {
-
+            BattleSystem.Instance.StartEnemyTurn();
+            return;
         }
         if (Input.GetKeyDown(Keys.pause))
         {

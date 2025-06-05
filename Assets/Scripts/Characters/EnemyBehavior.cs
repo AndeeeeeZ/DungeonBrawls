@@ -32,7 +32,9 @@ public class EnemyBehavior : MonoBehaviour
         // Not using transform.position because the character need to be at the new location when making the next move
         currPosition = transform.position;
         enemyStats = GetComponent<Enemy>();        
-        BattleSystem.Instance.RegisterEnemy(this); 
+        BattleSystem.Instance.RegisterEnemy(this);
+        spriteName = "";
+        UpdateActionIndicator();
     }
     public virtual void SelectNextMove()
     {
@@ -41,23 +43,23 @@ public class EnemyBehavior : MonoBehaviour
         Collider2D hit = Physics2D.OverlapCircle(currPosition, visibleRange, playerLayer);
         if (hit != null)
         {
-            if (hit.GetComponent<PlayerStats>() != null)
-            {
-                Vector3 targetLocation = hit.transform.position;
+            if (hit.GetComponent<PlayerStats>() != null && hit.GetComponent<CharacterMovement>() != null)
+            {                
+                Vector3 targetLocation = hit.GetComponent<CharacterMovement>().movePoint.transform.position;
+
                 float xDiff = targetLocation.x - currPosition.x;
                 float yDiff = targetLocation.y - currPosition.y;
                 Debug.Log($"Current x and y diff: ({xDiff},{yDiff})"); 
                 // Attack player if in range
                 if (xDiff == 0f && Mathf.Abs(yDiff) <= attackRange || yDiff == 0f && Mathf.Abs(xDiff) <= attackRange)
                 {
-                    Attack(new Vector2Int((int)targetLocation.x, (int)targetLocation.y), hit.GetComponent<PlayerStats>()); 
+                    Attack(new Vector2Int((int)targetLocation.x, (int)targetLocation.y), hit.gameObject); 
                 }
                 else
                 {
-                    Move(xDiff, yDiff);
+                    Move(xDiff, yDiff, hit.gameObject);
                 }
-                spriteResolver.SetCategoryAndLabel(spriteResolverLabel, spriteName);
-                spriteResolver.ResolveSpriteToSpriteRenderer(); 
+                UpdateActionIndicator();
             }
         }
         else
@@ -66,9 +68,15 @@ public class EnemyBehavior : MonoBehaviour
         }
     }
 
+    private void UpdateActionIndicator()
+    {
+        spriteResolver.SetCategoryAndLabel(spriteResolverLabel, spriteName);
+        spriteResolver.ResolveSpriteToSpriteRenderer();
+    }
+
     public void Act()
     {
-        if(nextAction != null)
+        if(nextAction != null && CheckAction(nextAction.actionType))
         {
             if (nextAction.actionType == ActionType.MOVEMENT)
             {
@@ -80,15 +88,39 @@ public class EnemyBehavior : MonoBehaviour
             else if (nextAction.actionType == ActionType.ATTACK)
             {
                 // TODO: attack if the target is still in range
-                BattleSystem.Instance.ExecuteAttack(enemyStats, nextAction.target); 
+                BattleSystem.Instance.ExecuteAttack(enemyStats, nextAction.target.GetComponent<PlayerStats>()); 
             }
         }
         SelectNextMove();
     }
-
-    private void Move(float xDiff, float yDiff)
+    private bool CheckAction(ActionType actionType)
     {
-        nextAction = new Action(ActionType.MOVEMENT);
+        Collider2D hit; 
+        switch (actionType) 
+        { 
+            case ActionType.MOVEMENT:
+                Vector3 moveLocation = nextAction.movement + GetCurrentPosition();
+                if (nextAction.target?.GetComponent<CharacterMovement>().movePoint.transform.position == moveLocation)
+                {
+                    SelectNextMove();
+                    return false; 
+                }
+                break; 
+
+            case ActionType.ATTACK:
+                hit = Physics2D.OverlapPoint(nextAction.targetLocation + GetCurrentPosition());
+                if (hit == null)
+                {
+                    SelectNextMove();
+                    return false; 
+                }
+                break; 
+        }
+        return true; 
+    }
+    private void Move(float xDiff, float yDiff, GameObject target)
+    {
+        nextAction = new Action(ActionType.MOVEMENT, target);
         // Move towards player
         if (Mathf.Abs(xDiff) > Mathf.Abs(yDiff))
         {
@@ -109,11 +141,16 @@ public class EnemyBehavior : MonoBehaviour
     }
 
     // Act out the attack
-    private void Attack(Vector2Int targetLocation, Character target)
+    private void Attack(Vector2Int targetLocation, GameObject target)
     {
         nextAction = new Action(ActionType.ATTACK, target); 
         nextAction.targetLocation = targetLocation;
         spriteName = "Attack";
         // Debug.Log("Enemy is going to attack");
+    }
+
+    private Vector2 GetCurrentPosition()
+    {
+        return new Vector2(enemyMovement.movePoint.transform.position.x, enemyMovement.movePoint.transform.position.y);
     }
 }
