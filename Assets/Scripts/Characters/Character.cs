@@ -53,6 +53,7 @@ public class Character : MonoBehaviour
         UpdateUI(); 
     }
 
+    // Updates health bar UI
     public void UpdateUI()
     {
         healthBarUI.UpdateHealthBar(currentHP, maxHP);

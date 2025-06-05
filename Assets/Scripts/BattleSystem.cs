@@ -17,28 +17,31 @@ public class BattleSystem : MonoBehaviour
         enemies = new List<EnemyBehavior>();
     }
 
+    // Adds enemy into the list in the current scene
     public void RegisterEnemy(EnemyBehavior enemy)
     {
         enemies.Add(enemy);
     }
-
     public void StartEnemyTurn()
     {
         StartCoroutine(EnemyTurnRoutine()); 
     }
 
+    // Go through the list of enemies in the scene 
+    // Each enemy acts and select its next move
     private IEnumerator EnemyTurnRoutine()
     {
         Debug.Log($"There's currently {enemies.Count} enemies in the map");
         for (int i = 0; i < enemies.Count; i++)
         {
             enemies[i].Act();
-            yield return new WaitForSeconds(0.05f); 
             enemies[i].SelectNextMove();
             yield return new WaitForSeconds(0.05f); 
         }
     }
 
+    // Returns the damage dealt
+    // Damage is calculated by defender's defense - attacker's attack
     public int CalculateAttack(Character attacker, Character defender)
     {
         return(Mathf.Max(0, attacker.attack - defender.defense));

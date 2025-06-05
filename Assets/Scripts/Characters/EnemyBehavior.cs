@@ -7,6 +7,9 @@ using Unity.VisualScripting;
 public class EnemyBehavior : MonoBehaviour
 {
     [SerializeField]
+    private bool debugging; 
+
+    [SerializeField]
     private float visibleRange, attackRange;
 
     [SerializeField]
@@ -24,13 +27,8 @@ public class EnemyBehavior : MonoBehaviour
     private string spriteName; 
 
     public Action nextAction;
-
-    private Vector3 currPosition; 
-
     public void Start()
     {
-        // Not using transform.position because the character need to be at the new location when making the next move
-        currPosition = transform.position;
         enemyStats = GetComponent<Enemy>();        
         BattleSystem.Instance.RegisterEnemy(this);
         spriteName = "";
@@ -40,17 +38,22 @@ public class EnemyBehavior : MonoBehaviour
     {
         spriteName = "";
         
-        Collider2D hit = Physics2D.OverlapCircle(currPosition, visibleRange, playerLayer);
+        // Check if the player is visible to the current character
+        Collider2D hit = Physics2D.OverlapCircle(GetCurrentPosition(), visibleRange, playerLayer);
         if (hit != null)
         {
             if (hit.GetComponent<PlayerStats>() != null && hit.GetComponent<CharacterMovement>() != null)
             {                
+                // Get player/target's position
                 Vector3 targetLocation = hit.GetComponent<CharacterMovement>().movePoint.transform.position;
 
-                float xDiff = targetLocation.x - currPosition.x;
-                float yDiff = targetLocation.y - currPosition.y;
-                Debug.Log($"Current x and y diff: ({xDiff},{yDiff})"); 
-                // Attack player if in range
+                float xDiff = targetLocation.x - GetCurrentPosition().x;
+                float yDiff = targetLocation.y - GetCurrentPosition().y;
+
+                if(debugging)
+                    Debug.Log($"Current x and y diff from the player: ({xDiff},{yDiff})"); 
+
+                // Going to attack player if in range
                 if (xDiff == 0f && Mathf.Abs(yDiff) <= attackRange || yDiff == 0f && Mathf.Abs(xDiff) <= attackRange)
                 {
                     Attack(new Vector2Int((int)targetLocation.x, (int)targetLocation.y), hit.gameObject); 
@@ -64,26 +67,29 @@ public class EnemyBehavior : MonoBehaviour
         }
         else
         {
-            Debug.Log("Player not detected in scene"); 
+            if (debugging)
+                Debug.Log("Player is not visible to the enemy"); 
         }
     }
-
     private void UpdateActionIndicator()
     {
         spriteResolver.SetCategoryAndLabel(spriteResolverLabel, spriteName);
         spriteResolver.ResolveSpriteToSpriteRenderer();
     }
 
+    // Execute the action
     public void Act()
     {
+        // Checks if the next action is still reasonable after player's new action
         if(nextAction != null && CheckAction(nextAction.actionType))
         {
             if (nextAction.actionType == ActionType.MOVEMENT)
             {
                 // TODO: change it so that the enemy wouldn't away if the character moved to another location that looks weird if the enemy moved to the origional planned location
                 enemyMovement.Move(nextAction.movement.x, nextAction.movement.y);
-                currPosition += new Vector3(nextAction.movement.x, nextAction.movement.y, 0f);
-                Debug.Log($"Enemy moves by {nextAction.movement.x}, {nextAction.movement.y}");
+                
+                if (debugging)
+                    Debug.Log($"Enemy moves by {nextAction.movement.x}, {nextAction.movement.y}");
             }
             else if (nextAction.actionType == ActionType.ATTACK)
             {
@@ -91,26 +97,35 @@ public class EnemyBehavior : MonoBehaviour
                 BattleSystem.Instance.ExecuteAttack(enemyStats, nextAction.target.GetComponent<PlayerStats>()); 
             }
         }
-        SelectNextMove();
     }
+
+    // Checks if the character's movement is still resonable
     private bool CheckAction(ActionType actionType)
     {
         Collider2D hit; 
         switch (actionType) 
-        { 
+        {
             case ActionType.MOVEMENT:
+                // Don't move if a character gets in the way
                 Vector3 moveLocation = nextAction.movement + GetCurrentPosition();
                 if (nextAction.target?.GetComponent<CharacterMovement>().movePoint.transform.position == moveLocation)
                 {
+                    if (debugging)
+                        Debug.Log("Enemy decides to change movement because player gets in the way"); 
+
                     SelectNextMove();
                     return false; 
                 }
                 break; 
 
             case ActionType.ATTACK:
+                // Don't attack if target character moved to a new location
                 hit = Physics2D.OverlapPoint(nextAction.targetLocation + GetCurrentPosition());
                 if (hit == null)
                 {
+                    if (debugging)
+                        Debug.Log("Enemy decides to not attack because player is no long in the same position"); 
+
                     SelectNextMove();
                     return false; 
                 }
@@ -118,6 +133,10 @@ public class EnemyBehavior : MonoBehaviour
         }
         return true; 
     }
+
+    // Decides where the character should move based on the target character's position
+    // TODO: get a better path-finding
+    // TODO: there's a bug where the character would still move up after player moved down
     private void Move(float xDiff, float yDiff, GameObject target)
     {
         nextAction = new Action(ActionType.MOVEMENT, target);
@@ -140,15 +159,16 @@ public class EnemyBehavior : MonoBehaviour
         }
     }
 
-    // Act out the attack
+    // Decides to attack
     private void Attack(Vector2Int targetLocation, GameObject target)
     {
         nextAction = new Action(ActionType.ATTACK, target); 
         nextAction.targetLocation = targetLocation;
         spriteName = "Attack";
-        // Debug.Log("Enemy is going to attack");
     }
 
+    // Return current position of the MovePoint
+    // The MovePoinet position is the "ture" position of this character
     private Vector2 GetCurrentPosition()
     {
         return new Vector2(enemyMovement.movePoint.transform.position.x, enemyMovement.movePoint.transform.position.y);
