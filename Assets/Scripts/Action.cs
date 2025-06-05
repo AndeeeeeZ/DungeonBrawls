@@ -5,13 +5,13 @@ public class Action
     public Vector2Int movement;
     public Vector2Int targetLocation; 
     public ActionType actionType;
-    public Character target; 
+    public GameObject target; 
     public Action(ActionType actionType)
     {
         this.actionType = actionType; 
     }
 
-    public Action(ActionType actionType, Character target)
+    public Action(ActionType actionType, GameObject target)
     {
         this.actionType = actionType;
         this.target = target;

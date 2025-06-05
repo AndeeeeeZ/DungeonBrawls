@@ -25,12 +25,17 @@ public class InputSystem : MonoBehaviour
         }
         if (Input.GetKeyDown(Keys.skip))
         {
-
+            BattleSystem.Instance.StartEnemyTurn();
+            return;
         }
         if (Input.GetKeyDown(Keys.pause))
         {
 
         }
-        playerMovement.Move(x, y);
+        if (x != 0 || y != 0) 
+        {
+            playerMovement.Move(x, y);
+            BattleSystem.Instance.StartEnemyTurn(); 
+        }   
     }
 }

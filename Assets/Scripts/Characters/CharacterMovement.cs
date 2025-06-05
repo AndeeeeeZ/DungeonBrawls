@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour
@@ -6,9 +5,11 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField]
     private float stepSize, moveSpeed;
 
-    [SerializeField]
-    private Transform movePoint;
+    // MovePoint is the point that the character is going to move towards
+    // MovePoint is used as the "true" position of the character
+    public Transform movePoint;
 
+    // The layer that characters cannot move through
     [SerializeField]
     private LayerMask obstacleLayer;
 
@@ -23,17 +24,22 @@ public class CharacterMovement : MonoBehaviour
         
         if (character == null)
         {
-            Debug.Log("Character class not detected"); 
+            Debug.LogWarning("Character missing"); 
+        }
+        if (movePoint == null)
+        {
+            Debug.LogWarning("Movement point missing");
         }
     }
 
     private void Update()
     {
+        // Moves character towards MovePoint
         if (transform.position != movePoint.position) 
             transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
     }
 
-    // Move the target point
+    // Move MovePoint
     public void Move(int x, int y)
     {
         Mathf.Clamp(x, -1, 1);
@@ -44,9 +50,10 @@ public class CharacterMovement : MonoBehaviour
 
         Vector3 moveLocation = movePoint.position + new Vector3(x, y, movePoint.position.z);
 
+        // Checks if there is any character at the target location
         Collider2D hit = Physics2D.OverlapPoint(moveLocation);
 
-        // TODO: moving this to a different location
+        // TODO: moving this to a different location / new class
         if (hit != null)
         {
             if (hit.CompareTag("Character") && hit)
@@ -54,7 +61,7 @@ public class CharacterMovement : MonoBehaviour
                 Character defender = hit.GetComponent<Character>();
                 if (defender != null)
                 {
-                    BattleSystem.ExecuteAttack(character, defender);
+                    BattleSystem.Instance.ExecuteAttack(character, defender);
                 }
                 else
                 {
@@ -69,4 +76,9 @@ public class CharacterMovement : MonoBehaviour
         }
 
     }  
+
+    public Vector2Int TruePosition()
+    {
+        return new Vector2Int((int)movePoint.transform.position.x, (int)movePoint.transform.position.y);
+    }
 }
