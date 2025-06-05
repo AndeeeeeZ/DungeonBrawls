@@ -54,7 +54,7 @@ public class CharacterMovement : MonoBehaviour
                 Character defender = hit.GetComponent<Character>();
                 if (defender != null)
                 {
-                    BattleSystem.ExecuteAttack(character, defender);
+                    BattleSystem.Instance.ExecuteAttack(character, defender);
                 }
                 else
                 {

@@ -31,6 +31,10 @@ public class InputSystem : MonoBehaviour
         {
 
         }
-        playerMovement.Move(x, y);
+        if (x != 0 || y != 0) 
+        {
+            playerMovement.Move(x, y);
+            BattleSystem.Instance.StartEnemyTurn(); 
+        }   
     }
 }

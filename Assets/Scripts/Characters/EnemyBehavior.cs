@@ -31,7 +31,8 @@ public class EnemyBehavior : MonoBehaviour
     {
         // Not using transform.position because the character need to be at the new location when making the next move
         currPosition = transform.position;
-        enemyStats = GetComponent<Enemy>(); 
+        enemyStats = GetComponent<Enemy>();        
+        BattleSystem.Instance.RegisterEnemy(this); 
     }
     public virtual void SelectNextMove()
     {
@@ -79,7 +80,7 @@ public class EnemyBehavior : MonoBehaviour
             else if (nextAction.actionType == ActionType.ATTACK)
             {
                 // TODO: attack if the target is still in range
-                BattleSystem.ExecuteAttack(enemyStats, nextAction.target); 
+                BattleSystem.Instance.ExecuteAttack(enemyStats, nextAction.target); 
             }
         }
         SelectNextMove();
