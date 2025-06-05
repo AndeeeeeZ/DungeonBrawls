@@ -76,4 +76,9 @@ public class CharacterMovement : MonoBehaviour
         }
 
     }  
+
+    public Vector2Int TruePosition()
+    {
+        return new Vector2Int((int)movePoint.transform.position.x, (int)movePoint.transform.position.y);
+    }
 }

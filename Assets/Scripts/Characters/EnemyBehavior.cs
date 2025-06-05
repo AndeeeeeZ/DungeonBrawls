@@ -31,12 +31,12 @@ public class EnemyBehavior : MonoBehaviour
     {
         enemyStats = GetComponent<Enemy>();        
         BattleSystem.Instance.RegisterEnemy(this);
-        spriteName = "";
+        spriteName = "None";
         UpdateActionIndicator();
     }
     public virtual void SelectNextMove()
     {
-        spriteName = "";
+        spriteName = "None";
         
         // Check if the player is visible to the current character
         Collider2D hit = Physics2D.OverlapCircle(GetCurrentPosition(), visibleRange, playerLayer);
@@ -102,13 +102,12 @@ public class EnemyBehavior : MonoBehaviour
     // Checks if the character's movement is still resonable
     private bool CheckAction(ActionType actionType)
     {
-        Collider2D hit; 
         switch (actionType) 
         {
             case ActionType.MOVEMENT:
                 // Don't move if a character gets in the way
-                Vector3 moveLocation = nextAction.movement + GetCurrentPosition();
-                if (nextAction.target?.GetComponent<CharacterMovement>().movePoint.transform.position == moveLocation)
+                Vector2 moveLocation = nextAction.movement + GetCurrentPosition();
+                if (nextAction.target.GetComponent<CharacterMovement>().TruePosition() == moveLocation)
                 {
                     if (debugging)
                         Debug.Log("Enemy decides to change movement because player gets in the way"); 
@@ -120,8 +119,8 @@ public class EnemyBehavior : MonoBehaviour
 
             case ActionType.ATTACK:
                 // Don't attack if target character moved to a new location
-                hit = Physics2D.OverlapPoint(nextAction.targetLocation + GetCurrentPosition());
-                if (hit == null)
+
+                if (nextAction.targetLocation != nextAction.target.GetComponent<CharacterMovement>().TruePosition())
                 {
                     if (debugging)
                         Debug.Log("Enemy decides to not attack because player is no long in the same position"); 
