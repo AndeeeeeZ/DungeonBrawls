@@ -16,7 +16,7 @@ public class CharacterMovement : MonoBehaviour
 
     public UnityEvent PlayerArrivedTargetLocation; 
 
-    private Character character; 
+    private Character character;
 
     private void Start()
     {
@@ -37,11 +37,17 @@ public class CharacterMovement : MonoBehaviour
 
     private void Update()
     {
-        // Moves character towards MovePoint
-        if (transform.position != movePoint.position) 
-            transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
-        else
-            PlayerArrivedTargetLocation.Invoke();
+        if (transform.position != movePoint.position)
+            MoveTowardTarget(); 
+    }
+    // Moves character towards MovePoint
+    private void MoveTowardTarget()
+    {
+        transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
+        if (transform.position == movePoint.position)
+        {
+            PlayerArrivedTargetLocation.Invoke(); 
+        }
     }
 
     // Move MovePoint
