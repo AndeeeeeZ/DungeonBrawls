@@ -1,9 +1,13 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class InputSystem : MonoBehaviour
 {
     [SerializeField] private CharacterMovement playerMovement;
-    [SerializeField] private SpriteController spriteController; 
+    [SerializeField] private SpriteController spriteController;
+
+    public UnityEvent OnMouseClick; 
+
     private void Update()
     {
         int x = 0;
@@ -32,6 +36,10 @@ public class InputSystem : MonoBehaviour
         if (Input.GetKeyDown(Keys.pause))
         {
 
+        }
+        if (Input.GetMouseButtonDown(0))
+        {
+            OnMouseClick.Invoke();
         }
         if (x != 0 || y != 0) 
         {

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Android;
 
 public class SpriteController : MonoBehaviour
 {
@@ -18,7 +17,7 @@ public class SpriteController : MonoBehaviour
 
     public void StartWalking(int x, int y)
     {            
-         
+        // Triggers if in idle state or changed direction
         if (this.x != x || this.y != y || !isMoving)
         {
             animator.SetTrigger("START");
@@ -35,6 +34,7 @@ public class SpriteController : MonoBehaviour
         animator.SetInteger("Y", this.y);
     }
 
+    // Stops walking animaiton
     public void StopWalking()
     {
         animator.SetTrigger("STOP");
