@@ -7741,7 +7741,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b8b8c748100f5143b0e11edf9fe8a26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugging: 0
+  debugging: 1
   visibleRange: 10
   attackRange: 1
   enemyMovement: {fileID: 1858597832}

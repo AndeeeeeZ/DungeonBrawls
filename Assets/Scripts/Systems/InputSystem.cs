@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class InputSystem : MonoBehaviour
 {
-    [SerializeField] private CharacterMovement playerMovement; 
+    [SerializeField] private CharacterMovement playerMovement;
+    [SerializeField] private SpriteController spriteController; 
     private void Update()
     {
         int x = 0;
@@ -35,6 +36,7 @@ public class InputSystem : MonoBehaviour
         if (x != 0 || y != 0) 
         {
             playerMovement.Move(x, y);
+            spriteController.StartWalking(x, y);
             BattleSystem.Instance.StartEnemyTurn(); 
         }   
     }

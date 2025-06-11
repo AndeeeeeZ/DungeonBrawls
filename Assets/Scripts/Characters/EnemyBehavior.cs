@@ -42,6 +42,7 @@ public class EnemyBehavior : MonoBehaviour
         Collider2D hit = Physics2D.OverlapCircle(GetCurrentPosition(), visibleRange, playerLayer);
         if (hit != null)
         {
+            // Note this might cause a bug if PlayerStats and CharacterMovement components are not on the same game object as the player collider
             if (hit.GetComponent<PlayerStats>() != null && hit.GetComponent<CharacterMovement>() != null)
             {                
                 // Get player/target's position
@@ -63,6 +64,11 @@ public class EnemyBehavior : MonoBehaviour
                     Move(xDiff, yDiff, hit.gameObject);
                 }
                 UpdateActionIndicator();
+            }
+            else
+            {
+                if (debugging)
+                    Debug.Log("Enemy detects something other than player"); 
             }
         }
         else
@@ -96,6 +102,13 @@ public class EnemyBehavior : MonoBehaviour
                 // TODO: attack if the target is still in range
                 BattleSystem.Instance.ExecuteAttack(enemyStats, nextAction.target.GetComponent<PlayerStats>()); 
             }
+        }
+        else
+        {
+            SelectNextMove();
+
+            if (debugging)
+                Debug.Log("Enemy chooses next move due to null nextAction"); 
         }
     }
 

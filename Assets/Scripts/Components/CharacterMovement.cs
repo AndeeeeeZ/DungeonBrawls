@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class CharacterMovement : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class CharacterMovement : MonoBehaviour
     // The layer that characters cannot move through
     [SerializeField]
     private LayerMask obstacleLayer;
+
+    public UnityEvent PlayerArrivedTargetLocation; 
 
     private Character character; 
 
@@ -37,6 +40,8 @@ public class CharacterMovement : MonoBehaviour
         // Moves character towards MovePoint
         if (transform.position != movePoint.position) 
             transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
+        else
+            PlayerArrivedTargetLocation.Invoke();
     }
 
     // Move MovePoint

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections;
 public class BattleSystem : MonoBehaviour
 {
+    [SerializeField]
+    private bool debugging; 
     public static BattleSystem Instance { get; private set; } 
     private List<EnemyBehavior> enemies;
 
@@ -31,7 +33,9 @@ public class BattleSystem : MonoBehaviour
     // Each enemy acts and select its next move
     private IEnumerator EnemyTurnRoutine()
     {
-        Debug.Log($"There's currently {enemies.Count} enemies in the map");
+        if (debugging)
+            Debug.Log($"There's currently {enemies.Count} enemies in the map");
+
         for (int i = 0; i < enemies.Count; i++)
         {
             enemies[i].Act();
