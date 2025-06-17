@@ -1079,12 +1079,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85ae13c8499d202458704bb8061eafd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugging: 0
   eventSystem: {fileID: 730155046}
   raycaster: {fileID: 1948660552}
+  actionCardDisplays:
+  - {fileID: 2112306509}
+  - {fileID: 184408838}
+  - {fileID: 730775944}
   actionCards:
   - {fileID: 2112306509}
   - {fileID: 184408838}
   - {fileID: 730775944}
+  gapBetweenCards: 200
+  selectYOffset: 20
+  cardMovementSpeed: 5
   maxCardLimit: 0
   currentCardAmount: 0
 --- !u!1 &1607770460
