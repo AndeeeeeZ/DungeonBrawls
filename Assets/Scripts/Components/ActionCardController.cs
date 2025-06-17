@@ -34,18 +34,21 @@ public class ActionCardController : MonoBehaviour
     private void Start()
     {
         maxCardLimit = actionCardDisplays.Length;
+        currentCardAmount = maxCardLimit; 
         targetXLocation = new float[maxCardLimit];
         targetYLocation = new float[maxCardLimit];
+        CalculateTargetLocation(); 
     }
-
 
     private void Update()
     {
+        CalculateTargetLocation();
         // Move the action card to the location they are supposed to be
         for (int i = 0; i < actionCardDisplays.Length; i++)
         {
             Transform actionCardDisplayTransform = actionCardDisplays[i].transform;
-            Vector3 target = new Vector3(actionCardDisplayTransform.localPosition.x,
+            Vector3 target = new Vector3(
+                targetXLocation[i],
                 targetYLocation[i],
                 actionCardDisplayTransform.localPosition.z);
             actionCardDisplays[i].transform.localPosition = Vector3.Lerp(actionCardDisplays[i].transform.localPosition, target, cardMovementSpeed * Time.deltaTime);
@@ -97,10 +100,8 @@ public class ActionCardController : MonoBehaviour
         }
     }
 
-    
-
     // Change current card amount by n
-    private void ChangeCurrentCardAmountBy(int n)
+    public void ChangeCurrentCardAmountBy(int n)
     {
         currentCardAmount += n; 
         if (currentCardAmount <= 0 ||  currentCardAmount > maxCardLimit)
@@ -115,6 +116,30 @@ public class ActionCardController : MonoBehaviour
     // In order to maintain the gap while centering the group of cards
     private void CalculateTargetLocation()
     {
-        // TODO
+        UpdateDisplayActivity(); 
+        float totalDistance = (currentCardAmount - 1) * gapBetweenCards;
+        targetXLocation[0] = -(totalDistance / 2f); 
+        for (int i = 1; i < currentCardAmount; i++)
+        {
+            targetXLocation[i] = targetXLocation[i-1] + gapBetweenCards;    
+        }
+
+        // New cards spawns in the location of the right most card
+        for (int i = currentCardAmount; i < maxCardLimit; i++)
+        {
+            targetXLocation[i] = targetXLocation[currentCardAmount - 1]; 
+        }
+    }
+
+    // Update all the current cards UI as active, vice versa
+    private void UpdateDisplayActivity()
+    {
+        for (int i = 0; i < maxCardLimit; i++)
+        {
+            if (i >= currentCardAmount)
+                actionCardDisplays[i].SetActive(false);
+            else
+                actionCardDisplays[i].SetActive(true);
+        }
     }
 }
