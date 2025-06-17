@@ -1571,7 +1571,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2112306510}
   - {fileID: 184408839}
@@ -1609,9 +1609,10 @@ MonoBehaviour:
   - {fileID: 1321337465}
   - {fileID: 144689679}
   actionCards:
-  - {fileID: 2112306509}
-  - {fileID: 184408838}
-  - {fileID: 730775944}
+  - {fileID: 11400000, guid: 91e617b7c98b97c4698b405ec7bc3604, type: 2}
+  - {fileID: 11400000, guid: 91e617b7c98b97c4698b405ec7bc3604, type: 2}
+  - {fileID: 11400000, guid: 51b9bcd7b3ed55645861f10798e15769, type: 2}
+  - {fileID: 11400000, guid: 51b9bcd7b3ed55645861f10798e15769, type: 2}
   gapBetweenCards: 200
   selectYOffset: 25
   cardMovementSpeed: 5

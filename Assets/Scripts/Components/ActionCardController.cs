@@ -34,10 +34,11 @@ public class ActionCardController : MonoBehaviour
     private void Start()
     {
         maxCardLimit = actionCardDisplays.Length;
-        currentCardAmount = maxCardLimit; 
+        currentCardAmount = actionCards.Length; 
         targetXLocation = new float[maxCardLimit];
         targetYLocation = new float[maxCardLimit];
-        CalculateTargetLocation(); 
+        CalculateTargetLocation();
+        UpdateDisplaySprite(); 
     }
 
     private void Update()
@@ -140,6 +141,14 @@ public class ActionCardController : MonoBehaviour
                 actionCardDisplays[i].SetActive(false);
             else
                 actionCardDisplays[i].SetActive(true);
+        }
+    }
+
+    private void UpdateDisplaySprite()
+    {
+        for (int i = 0; i < actionCards.Length; i++)
+        {
+            actionCardDisplays[i].GetComponent<Image>().sprite = actionCards[i].sprite;
         }
     }
 }
