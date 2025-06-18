@@ -29,6 +29,7 @@ public class ArrowIndictor : MonoBehaviour
         points[0] = startPosition;
         points[1] = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
+        // Sets z position to 0 so the line is properly rendered in game view
         points[0].z = 0f; 
         points[1].z = 0f;
 

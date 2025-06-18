@@ -55,7 +55,7 @@ public class InputSystem : MonoBehaviour
         {
             OnMouseClick.Invoke();
         }
-        if (Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonDown(1))
         {
             OnMouseRelease.Invoke();
         }
