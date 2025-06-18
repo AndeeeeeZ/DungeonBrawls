@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+
+// Singleton
 public class BattleSystem : MonoBehaviour
 {
     [SerializeField]

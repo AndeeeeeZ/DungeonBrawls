@@ -1,8 +1,10 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using System.Collections.Generic; 
+using System.Collections.Generic;
+using JetBrains.Annotations;
 
+// Singleton
 public class ActionCardController : MonoBehaviour
 {
     [SerializeField]
@@ -26,26 +28,45 @@ public class ActionCardController : MonoBehaviour
     [HideInInspector]
     public int maxCardLimit, currentCardAmount;
 
+    public static ActionCardController Instance { get; private set; }
+
     private PointerEventData pointerEventData;
 
     private float[] targetXLocation; 
     private float[] targetYLocation;
 
+    private int draggedCardIndex; 
+
     private void Start()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+
         maxCardLimit = actionCardDisplays.Length;
         currentCardAmount = actionCards.Length; 
         targetXLocation = new float[maxCardLimit];
         targetYLocation = new float[maxCardLimit];
+        draggedCardIndex = -1; 
+
         CalculateTargetLocation();
-        UpdateDisplaySprite(); 
+        UpdateDisplaySprite();
+        
     }
 
     private void Update()
     {
-        CheckMouseClick();
+        CheckMousePosition();
         CalculateTargetLocation();
-        // Move the action card to the location they are supposed to be
+        UpdateCardPosition();
+    }
+
+    // Move the action card to the location they are supposed to be
+    private void UpdateCardPosition()
+    {
         for (int i = 0; i < actionCardDisplays.Length; i++)
         {
             Transform actionCardDisplayTransform = actionCardDisplays[i].transform;
@@ -65,13 +86,15 @@ public class ActionCardController : MonoBehaviour
             {
                 actionCardDisplays[i].transform.localPosition = Vector3.Lerp(actionCardDisplays[i].transform.localPosition, target, cardMoveUpSpeed * Time.deltaTime);
             }
-            
+
         }
     }
 
     // Checks if the player clicks on the action cards
     // Works by the Unity Event System
-    public void CheckMouseClick()
+    // Return the selected action card's index
+    // Return -1 if none is selected
+    public int CheckMousePosition()
     {
         pointerEventData = new PointerEventData(eventSystem);
         pointerEventData.position = Input.mousePosition; 
@@ -79,20 +102,10 @@ public class ActionCardController : MonoBehaviour
         List<RaycastResult> results = new List<RaycastResult>();    
         raycaster.Raycast(pointerEventData, results);
 
-        if (results.Count == 0) 
-        {
-            SelectCard(-1); 
-        }
-
         foreach(RaycastResult result in results)
         {
-            if (debugging)
-            {
-                Debug.Log("Mouse clicked on something"); 
-            }
-
             // Check the index of the selected action card
-            for (int i = 0; i < actionCardDisplays.Length; i++)
+            for (int i = 0; i < currentCardAmount; i++)
             {
                 if (actionCardDisplays[i] == result.gameObject)
                 {
@@ -100,10 +113,27 @@ public class ActionCardController : MonoBehaviour
                     {
                         Debug.Log($"The index of the selected card is {i}");
                     }
-                    SelectCard(i); 
+                    SelectCard(i);
+                    return i; 
                 }
             }
         }
+        SelectCard(-1); 
+        return -1;
+    }
+
+    public void OnMouseHold()
+    {
+        int index = CheckMousePosition();
+        if (index != -1)
+        {
+            draggedCardIndex = index; 
+        }
+    }
+
+    public void OnMouseRelease()
+    {
+        draggedCardIndex = -1;
     }
 
     // Move up the selected card
@@ -112,9 +142,9 @@ public class ActionCardController : MonoBehaviour
         for (int i = 0; i < actionCardDisplays.Length; i++)
         {
             targetYLocation[i] = 0f; 
-            if (i == index)
+            if (i == index || i == draggedCardIndex)
             {
-                targetYLocation[index] = selectYOffset;
+                targetYLocation[i] = selectYOffset;
             }
         }
     }
@@ -161,12 +191,16 @@ public class ActionCardController : MonoBehaviour
                 actionCardDisplays[i].SetActive(true);
         }
     }
-
     private void UpdateDisplaySprite()
     {
         for (int i = 0; i < actionCards.Length; i++)
         {
             actionCardDisplays[i].GetComponent<Image>().sprite = actionCards[i].sprite;
         }
+    }
+
+    public int GetDraggedCardIndex()
+    {
+        return draggedCardIndex; 
     }
 }
