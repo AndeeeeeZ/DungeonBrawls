@@ -21,7 +21,7 @@ public class ActionCardController : MonoBehaviour
     private ActionCard[] actionCards;
 
     [SerializeField]
-    private float gapBetweenCards, selectYOffset, cardMovementSpeed;
+    private float gapBetweenCards, selectYOffset, cardMoveUpSpeed, cardMoveDownSpeed;
 
     [HideInInspector]
     public int maxCardLimit, currentCardAmount;
@@ -43,6 +43,7 @@ public class ActionCardController : MonoBehaviour
 
     private void Update()
     {
+        CheckMouseClick();
         CalculateTargetLocation();
         // Move the action card to the location they are supposed to be
         for (int i = 0; i < actionCardDisplays.Length; i++)
@@ -52,7 +53,19 @@ public class ActionCardController : MonoBehaviour
                 targetXLocation[i],
                 targetYLocation[i],
                 actionCardDisplayTransform.localPosition.z);
-            actionCardDisplays[i].transform.localPosition = Vector3.Lerp(actionCardDisplays[i].transform.localPosition, target, cardMovementSpeed * Time.deltaTime);
+
+            // If the card is returning to the original position
+            if (actionCardDisplays[i].transform.localPosition.y > target.y)
+            {
+                actionCardDisplays[i].transform.localPosition = Vector3.Lerp(actionCardDisplays[i].transform.localPosition, target, cardMoveDownSpeed * Time.deltaTime);
+            }
+            // If the mouse is currently over the action card
+            // Moving up to the desired position
+            else
+            {
+                actionCardDisplays[i].transform.localPosition = Vector3.Lerp(actionCardDisplays[i].transform.localPosition, target, cardMoveUpSpeed * Time.deltaTime);
+            }
+            
         }
     }
 
@@ -65,6 +78,11 @@ public class ActionCardController : MonoBehaviour
 
         List<RaycastResult> results = new List<RaycastResult>();    
         raycaster.Raycast(pointerEventData, results);
+
+        if (results.Count == 0) 
+        {
+            SelectCard(-1); 
+        }
 
         foreach(RaycastResult result in results)
         {

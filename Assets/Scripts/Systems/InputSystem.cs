@@ -37,10 +37,10 @@ public class InputSystem : MonoBehaviour
         {
 
         }
-        if (Input.GetMouseButtonDown(0))
-        {
-            OnMouseClick.Invoke();
-        }
+        //if (Input.GetMouseButtonDown(0))
+        //{
+        //    OnMouseClick.Invoke();
+        //}
         if (x != 0 || y != 0) 
         {
             playerMovement.Move(x, y);
