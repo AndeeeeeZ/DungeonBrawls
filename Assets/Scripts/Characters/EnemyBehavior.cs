@@ -21,7 +21,7 @@ public class EnemyBehavior : MonoBehaviour
     [SerializeField]
     private SpriteResolver spriteResolver;
 
-    private Enemy enemyStats; 
+    private EnemyStat enemyStat; 
     
     private string spriteResolverLabel = "Indicators";
     private string spriteName; 
@@ -29,7 +29,7 @@ public class EnemyBehavior : MonoBehaviour
     public Action nextAction;
     public void Start()
     {
-        enemyStats = GetComponent<Enemy>();        
+        enemyStat = GetComponent<EnemyStat>();        
         BattleSystem.Instance.RegisterEnemy(this);
         spriteName = "None";
         UpdateActionIndicator();
@@ -100,7 +100,7 @@ public class EnemyBehavior : MonoBehaviour
             else if (nextAction.actionType == ActionType.ATTACK)
             {
                 // TODO: attack if the target is still in range
-                BattleSystem.Instance.ExecuteAttack(enemyStats, nextAction.target.GetComponent<PlayerStats>()); 
+                BattleSystem.Instance.ExecuteAttack(enemyStat, nextAction.target.GetComponent<PlayerStats>()); 
             }
         }
         else

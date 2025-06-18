@@ -24,6 +24,12 @@ public class BattleSystem : MonoBehaviour
     {
         enemies.Add(enemy);
     }
+
+    // Removes enemy from the list in the current scene
+    public void RemoveEnemy(EnemyBehavior enemy)
+    {
+        enemies.Remove(enemy);
+    }
     public void StartEnemyTurn()
     {
         StartCoroutine(EnemyTurnRoutine()); 
@@ -36,11 +42,11 @@ public class BattleSystem : MonoBehaviour
         if (debugging)
             Debug.Log($"There's currently {enemies.Count} enemies in the map");
 
-        for (int i = 0; i < enemies.Count; i++)
+        for (int i = enemies.Count - 1; i >= 0; i--)
         {
             enemies[i].Act();
             enemies[i].SelectNextMove();
-            yield return new WaitForSeconds(0.05f); 
+            yield return new WaitForSeconds(0.1f); 
         }
     }
 
