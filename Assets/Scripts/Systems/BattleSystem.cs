@@ -8,7 +8,7 @@ public class BattleSystem : MonoBehaviour
     [SerializeField]
     private bool debugging; 
     public static BattleSystem Instance { get; private set; } 
-    private List<EnemyBehavior> enemies;
+    private List<EnemyStat> enemies;
 
     private void Start()
     {
@@ -18,21 +18,22 @@ public class BattleSystem : MonoBehaviour
             return; 
         }
         Instance = this;
-        enemies = new List<EnemyBehavior>();
+        enemies = new List<EnemyStat>();
     }
 
     // Adds enemy into the list in the current scene
-    public void RegisterEnemy(EnemyBehavior enemy)
+    public void RegisterEnemy(EnemyStat enemy)
     {
         enemies.Add(enemy);
     }
 
     // Removes enemy from the list in the current scene
     // Return a bool that indicates whether enemy is removed from the list
-    public bool RemoveEnemy(EnemyBehavior enemy)
+    public bool RemoveEnemy(EnemyStat enemy)
     {
         return enemies.Remove(enemy);
     }
+
     public void StartEnemyTurn()
     {
         StartCoroutine(EnemyTurnRoutine()); 
@@ -47,8 +48,8 @@ public class BattleSystem : MonoBehaviour
 
         for (int i = enemies.Count - 1; i >= 0; i--)
         {
-            enemies[i].Act();
-            enemies[i].SelectNextMove();
+            enemies[i].enemyBehavior.Act();
+            enemies[i].enemyBehavior.SelectNextMove();
             yield return new WaitForSeconds(0.1f); 
         }
     }
@@ -80,5 +81,31 @@ public class BattleSystem : MonoBehaviour
         }
         
         return damage; 
+    }
+
+    // When mouse is released, check which enemy is selected, if it's in range, etc.
+    public void ExecuteActionCard()
+    {
+        Debug.Log("Execute Action Card function called"); 
+        EnemyStat target = GetActionCardTarget();
+        if (target != null)
+        {
+            Debug.Log($"An action card is used on {target.gameObject.name}"); 
+        }
+
+        // remove action card from hand
+        // add animation to action card that goes to the discard pile
+    }
+
+    private EnemyStat GetActionCardTarget()
+    {
+        foreach (EnemyStat enemy in enemies)
+        {
+            if (enemy.IsThisEnemySelected())
+            {
+                return enemy;
+            }
+        }
+        return null; 
     }
 }

@@ -8,8 +8,9 @@ using JetBrains.Annotations;
 public class ActionCardController : MonoBehaviour
 {
     [SerializeField]
-    private bool debugging; 
+    private bool debugging;
 
+    #region References
     [SerializeField]
     private EventSystem eventSystem;
 
@@ -17,10 +18,12 @@ public class ActionCardController : MonoBehaviour
     private GraphicRaycaster raycaster;
 
     [SerializeField]
-    private GameObject[] actionCardDisplays;
+    private List<GameObject> actionCardDisplays;
 
     [SerializeField] 
     private ActionCard[] actionCards;
+
+    #endregion
 
     [SerializeField]
     private float gapBetweenCards, selectYOffset, cardMoveUpSpeed, cardMoveDownSpeed;
@@ -46,7 +49,7 @@ public class ActionCardController : MonoBehaviour
         }
         Instance = this;
 
-        maxCardLimit = actionCardDisplays.Length;
+        maxCardLimit = actionCardDisplays.Count;
         currentCardAmount = actionCards.Length; 
         targetXLocation = new float[maxCardLimit];
         targetYLocation = new float[maxCardLimit];
@@ -67,7 +70,7 @@ public class ActionCardController : MonoBehaviour
     // Move the action card to the location they are supposed to be
     private void UpdateCardPosition()
     {
-        for (int i = 0; i < actionCardDisplays.Length; i++)
+        for (int i = 0; i < actionCardDisplays.Count; i++)
         {
             Transform actionCardDisplayTransform = actionCardDisplays[i].transform;
             Vector3 target = new Vector3(
@@ -139,7 +142,7 @@ public class ActionCardController : MonoBehaviour
     // Move up the selected card
     private void SelectCard(int index)
     {
-        for (int i = 0; i < actionCardDisplays.Length; i++)
+        for (int i = 0; i < actionCardDisplays.Count; i++)
         {
             targetYLocation[i] = 0f; 
             if (i == index || i == draggedCardIndex)
@@ -155,9 +158,9 @@ public class ActionCardController : MonoBehaviour
         currentCardAmount += n; 
         if (currentCardAmount <= 0 ||  currentCardAmount > maxCardLimit)
         {
-            Debug.LogWarning("Card amount exceeds max card amount"); 
+            Debug.LogWarning("Card amount exceeds card amount limit"); 
         }
-        currentCardAmount = Mathf.Clamp(currentCardAmount, 1, maxCardLimit);
+        currentCardAmount = Mathf.Clamp(currentCardAmount, 0, maxCardLimit);
         CalculateTargetLocation(); 
     }
 
@@ -165,6 +168,9 @@ public class ActionCardController : MonoBehaviour
     // In order to maintain the gap while centering the group of cards
     private void CalculateTargetLocation()
     {
+        if (currentCardAmount == 0)
+            return; 
+
         UpdateDisplayActivity(); 
         float totalDistance = (currentCardAmount - 1) * gapBetweenCards;
         targetXLocation[0] = -(totalDistance / 2f); 
