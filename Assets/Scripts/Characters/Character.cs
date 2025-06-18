@@ -36,10 +36,7 @@ public class Character : MonoBehaviour
 
     #endregion
 
-    public bool IsAlive()
-    {
-        return currentHP > 0; 
-    }
+
 
     public void ReduceHealthBy(int amount)
     {
@@ -57,5 +54,14 @@ public class Character : MonoBehaviour
     public void UpdateUI()
     {
         healthBarUI.UpdateHealthBar(currentHP, maxHP);
+    }
+
+    public bool IsAlive()
+    {
+        return currentHP > 0; 
+    }
+    public virtual void Die()
+    {
+        Debug.Log($"{this.gameObject.name} died");
     }
 }

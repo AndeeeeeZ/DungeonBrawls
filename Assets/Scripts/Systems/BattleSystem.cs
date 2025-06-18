@@ -26,9 +26,10 @@ public class BattleSystem : MonoBehaviour
     }
 
     // Removes enemy from the list in the current scene
-    public void RemoveEnemy(EnemyBehavior enemy)
+    // Return a bool that indicates whether enemy is removed from the list
+    public bool RemoveEnemy(EnemyBehavior enemy)
     {
-        enemies.Remove(enemy);
+        return enemies.Remove(enemy);
     }
     public void StartEnemyTurn()
     {
@@ -62,8 +63,20 @@ public class BattleSystem : MonoBehaviour
     public int ExecuteAttack(Character attacker, Character defender)
     {
         int damage = CalculateAttack(attacker, defender);
-        Debug.Log($"{damage} damage is made");
+        
+        if (debugging)
+            Debug.Log($"{attacker.name} made {damage} damage to {defender.name}");
+        
         defender.ReduceHealthBy(damage);
+
+        if (!defender.IsAlive())
+        {
+            if (debugging)
+                Debug.Log($"{defender.name} died");
+
+            defender.Die(); 
+        }
+        
         return damage; 
     }
 }
