@@ -119,6 +119,10 @@ public class EnemyBehavior : MonoBehaviour
         {
             case ActionType.MOVEMENT:
                 // Don't move if a character gets in the way
+                
+                // TODO: checks again by detect if currently there's anything there
+                // because there's currently a bug where the two enemy will overlap
+
                 Vector2 moveLocation = nextAction.movement + GetCurrentPosition();
                 if (nextAction.target.GetComponent<CharacterMovement>().TruePosition() == moveLocation)
                 {
