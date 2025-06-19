@@ -90,11 +90,9 @@ public class BattleSystem : MonoBehaviour
         EnemyStat target = GetActionCardTarget();
         if (target != null)
         {
-            Debug.Log($"An action card is used on {target.gameObject.name}"); 
+            Debug.Log($"An action card is used on {target.gameObject.name}");
+            ActionCardController.Instance.RemoveSelectedCard(); 
         }
-
-        // remove action card from hand
-        // add animation to action card that goes to the discard pile
     }
 
     private EnemyStat GetActionCardTarget()

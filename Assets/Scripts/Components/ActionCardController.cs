@@ -75,23 +75,51 @@ public class ActionCardController : MonoBehaviour
         }
     }
 
+    // Add a card of the Scriptable Object of index cardObjectIndex at the end of the list
     public void AddCard(int cardObjectIndex)
     {
         AddCard(actionCardDisplays.Count, cardObjectIndex);
     }
 
+    // Add/Instantiate a card at index "index" of the Scriptable Object with the corresponding cardObjectIndex
     private void AddCard(int index, int cardObjectIndex)
     {
         targetXLocation.Add(0f);
         targetYLocation.Add(0f);
         actionCardDisplays.Add(Instantiate(actionCardUIPrefab, this.transform));
-        actionCardDisplays[index].transform.localPosition = new Vector3(deckLocation.x, deckLocation.y, 0); 
-
         actionCards.Add(actionCardScriptableObjects[cardObjectIndex]);
         currentCardAmount++;
-        UpdateDisplaySprite(index); 
         
-        Debug.Log("An action card is instantiated");
+        // Spawns new card at deck location
+        actionCardDisplays[index].transform.localPosition = 
+            new Vector3(deckLocation.x, deckLocation.y, 0); 
+
+        UpdateDisplaySprite(index); 
+
+        if (debugging)
+            Debug.Log("An action card is instantiated");
+    }
+
+    // Remove the card that is currently being dragged
+    public void RemoveSelectedCard()
+    {
+        if (draggedCardIndex != -1)
+        {
+            RemoveCard(draggedCardIndex);
+        }
+    }
+
+    // Remove card at index "index"
+    private void RemoveCard(int index)
+    {
+        Destroy(actionCardDisplays[index]);
+        targetXLocation.RemoveAt(index); 
+        targetYLocation.RemoveAt(index);
+        actionCardDisplays.RemoveAt(index);
+        actionCards.RemoveAt(index);
+        currentCardAmount--;
+
+        Debug.Log($"Action card at index {index} is removed");
     }
 
     private void Update()
@@ -186,14 +214,14 @@ public class ActionCardController : MonoBehaviour
         }
     }
 
+    // TODO: Update this to dynamically adjust gap if there's too many cards
+
     // Calculates the x position the cards need to move to 
     // In order to maintain the gap while centering the group of cards
     private void CalculateTargetLocation()
     {
         if (currentCardAmount == 0)
             return; 
-
-        //UpdateDisplayActivity(); 
 
         float totalDistance = (currentCardAmount - 1) * gapBetweenCards;
         targetXLocation[0] = -(totalDistance / 2f); 
