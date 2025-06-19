@@ -1,7 +1,8 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using System.Collections.Generic;
 
 // Singleton
 public class ActionCardController : MonoBehaviour
@@ -22,7 +23,7 @@ public class ActionCardController : MonoBehaviour
     private ActionCard[] actionCardScriptableObjects; 
 
     [SerializeField]
-    private float gapBetweenCards, selectYOffset, cardMoveUpSpeed, cardMoveDownSpeed;
+    private float gapBetweenCards, selectYOffset, cardMoveUpSpeed, cardMoveDownSpeed, waitTimeBetweenCards;
 
     [SerializeField]
     private Vector2Int deckLocation, discardPileLocation; 
@@ -31,7 +32,7 @@ public class ActionCardController : MonoBehaviour
     public int currentCardAmount;
 
     // TODO: add the limit for max card amount
-    public int maxCardAmount; 
+    public int maxCardAmount, initialHandSize; 
 
     public static ActionCardController Instance { get; private set; }
 
@@ -59,18 +60,21 @@ public class ActionCardController : MonoBehaviour
         actionCards = new List<ActionCard>();
 
         currentCardAmount = 0; 
-        draggedCardIndex = -1; 
+        draggedCardIndex = -1;
 
-        InitializeActionCardList(3); 
+        StartCoroutine(InitializeActionCardList(initialHandSize)); 
+        //InitializeActionCardList(initialHandSize);
         CalculateTargetLocation();
     }
 
     // Initialize with n action cards
-    private void InitializeActionCardList(int n)
+    // Wait a certain amount of time between each card
+    private IEnumerator InitializeActionCardList(int n)
     {
         for (int i = 0; i < n; i++)
         {
-            AddCard(i, 0); 
+            AddCard(i, 0);
+            yield return new WaitForSeconds(waitTimeBetweenCards); 
         }
     }
 
@@ -83,6 +87,11 @@ public class ActionCardController : MonoBehaviour
     // Add/Instantiate a card at index "index" of the Scriptable Object with the corresponding cardObjectIndex
     private void AddCard(int index, int cardObjectIndex)
     {
+        if (currentCardAmount == maxCardAmount)
+        {
+            Debug.LogWarning("Current card amount reached the max hand size");
+            return; 
+        }
         targetXLocation.Add(0f);
         targetYLocation.Add(0f);
         actionCardDisplays.Add(Instantiate(actionCardUIPrefab, this.transform));
@@ -118,7 +127,8 @@ public class ActionCardController : MonoBehaviour
         actionCards.RemoveAt(index);
         currentCardAmount--;
 
-        Debug.Log($"Action card at index {index} is removed");
+        if (debugging)
+            Debug.Log($"Action card at index {index} is removed");
     }
 
     private void Update()

@@ -84,10 +84,9 @@ public class BattleSystem : MonoBehaviour
         return damage; 
     }
 
-    // When mouse is released, check which enemy is selected, if it's in range, etc.
+    // TODO: When mouse is released, check which enemy is selected, if it's in range, etc.
     public void ExecuteActionCard()
     {
-        Debug.Log("Execute Action Card function called"); 
         EnemyStat target = GetActionCardTarget();
         if (target != null)
         {
