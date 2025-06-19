@@ -23,7 +23,7 @@ public class ActionCardController : MonoBehaviour
     private ActionCard[] actionCardScriptableObjects; 
 
     [SerializeField]
-    private float gapBetweenCards, selectYOffset, cardMoveUpSpeed, cardMoveDownSpeed, waitTimeBetweenCards;
+    private float gapBetweenCards, maxHandHorizontalLength, selectYOffset, cardMoveUpSpeed, cardMoveDownSpeed, waitTimeBetweenCards;
 
     [SerializeField]
     private Vector2Int deckLocation, discardPileLocation; 
@@ -31,9 +31,7 @@ public class ActionCardController : MonoBehaviour
     [HideInInspector]
     public int currentCardAmount;
 
-    // TODO: add the limit for max card amount
     public int maxCardAmount, initialHandSize; 
-
     public static ActionCardController Instance { get; private set; }
 
     private PointerEventData pointerEventData;
@@ -44,6 +42,7 @@ public class ActionCardController : MonoBehaviour
     private List<float> targetYLocation;
 
     private int draggedCardIndex; 
+   
 
     private void Start()
     {
@@ -115,11 +114,21 @@ public class ActionCardController : MonoBehaviour
         {
             RemoveCard(draggedCardIndex);
         }
+        else
+        {
+            Debug.LogWarning("No card is selected"); 
+        }
     }
 
     // Remove card at index "index"
     private void RemoveCard(int index)
     {
+        if (index >= actionCardDisplays.Count)
+        {
+            Debug.LogWarning("Action card index out of bound");
+            return; 
+        }
+
         Destroy(actionCardDisplays[index]);
         targetXLocation.RemoveAt(index); 
         targetYLocation.RemoveAt(index);
@@ -233,11 +242,20 @@ public class ActionCardController : MonoBehaviour
             return; 
 
         float totalDistance = (currentCardAmount - 1) * gapBetweenCards;
+        float gap = gapBetweenCards; 
+
+        // Checks if all the cards in hand is going to fit in the desired region
+        if (totalDistance > maxHandHorizontalLength)
+        {
+            totalDistance = maxHandHorizontalLength;
+            gap = maxHandHorizontalLength / (currentCardAmount - 1);     
+        }
+
         targetXLocation[0] = -(totalDistance / 2f); 
 
         for (int i = 1; i < currentCardAmount; i++)
         {
-            targetXLocation[i] = targetXLocation[i-1] + gapBetweenCards;    
+            targetXLocation[i] = targetXLocation[i-1] + gap;    
         }
     }
     private void UpdateDisplaySprite(int index)
