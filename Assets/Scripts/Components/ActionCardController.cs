@@ -25,9 +25,13 @@ public class ActionCardController : MonoBehaviour
     [SerializeField]
     private float gapBetweenCards, selectYOffset, cardMoveUpSpeed, cardMoveDownSpeed;
 
+    [SerializeField]
+    private Vector2Int deckLocation, discardPileLocation; 
+
     [HideInInspector]
     public int currentCardAmount;
 
+    // TODO: add the limit for max card amount
     public int maxCardAmount; 
 
     public static ActionCardController Instance { get; private set; }
@@ -56,11 +60,9 @@ public class ActionCardController : MonoBehaviour
         actionCards = new List<ActionCard>();
 
         currentCardAmount = 0; 
-
-        InitializeActionCardList(3); 
-
         draggedCardIndex = -1; 
 
+        InitializeActionCardList(3); 
         CalculateTargetLocation();
     }
 
@@ -80,10 +82,11 @@ public class ActionCardController : MonoBehaviour
 
     private void AddCard(int index, int cardObjectIndex)
     {
-    // TODO: change this to the deck location
         targetXLocation.Add(0f);
         targetYLocation.Add(0f);
         actionCardDisplays.Add(Instantiate(actionCardUIPrefab, this.transform));
+        actionCardDisplays[index].transform.localPosition = new Vector3(deckLocation.x, deckLocation.y, 0); 
+
         actionCards.Add(actionCardScriptableObjects[cardObjectIndex]);
         currentCardAmount++;
         UpdateDisplaySprite(index); 
@@ -183,19 +186,6 @@ public class ActionCardController : MonoBehaviour
         }
     }
 
-    // TODO: Change this to add a default card instead of showing one more existed card
-    // Change current card amount by n
-    //public void ChangeCurrentCardAmountBy(int n)
-    //{
-    //    currentCardAmount += n; 
-    //    if (currentCardAmount <= 0 ||  currentCardAmount > maxCardLimit)
-    //    {
-    //        Debug.LogWarning("Card amount exceeds card amount limit"); 
-    //    }
-    //    currentCardAmount = Mathf.Clamp(currentCardAmount, 0, maxCardLimit);
-    //    CalculateTargetLocation(); 
-    //}
-
     // Calculates the x position the cards need to move to 
     // In order to maintain the gap while centering the group of cards
     private void CalculateTargetLocation()
@@ -212,29 +202,10 @@ public class ActionCardController : MonoBehaviour
         {
             targetXLocation[i] = targetXLocation[i-1] + gapBetweenCards;    
         }
-
-        //// New cards spawns in the location of the right most card
-        //for (int i = currentCardAmount; i < currentCardAmount; i++)
-        //{
-        //    targetXLocation[i] = targetXLocation[currentCardAmount - 1]; 
-        //}
     }
-
-    //// Update all the current cards UI as active, vice versa
-    //private void UpdateDisplayActivity()
-    //{
-    //    for (int i = 0; i < currentCardAmount; i++)
-    //    {
-    //        if (i >= currentCardAmount)
-    //            actionCardDisplays[i].SetActive(false);
-    //        else
-    //            actionCardDisplays[i].SetActive(true);
-    //    }
-    //}
     private void UpdateDisplaySprite(int index)
     {
         actionCardDisplays[index].GetComponent<Image>().sprite = actionCards[index].sprite;
-        
     }
 
     public int GetDraggedCardIndex()
