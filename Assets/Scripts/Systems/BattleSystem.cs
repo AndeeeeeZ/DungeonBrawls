@@ -6,7 +6,10 @@ using System.Collections;
 public class BattleSystem : MonoBehaviour
 {
     [SerializeField]
-    private bool debugging; 
+    private bool debugging;
+
+    [SerializeField]
+    private PlayerStats player; 
     public static BattleSystem Instance { get; private set; } 
     private List<EnemyStat> enemies;
 
@@ -76,10 +79,8 @@ public class BattleSystem : MonoBehaviour
         {
             if (debugging)
                 Debug.Log($"{defender.name} died");
-
             defender.Die(); 
         }
-        
         return damage; 
     }
 
@@ -91,7 +92,11 @@ public class BattleSystem : MonoBehaviour
         if (target != null)
         {
             Debug.Log($"An action card is used on {target.gameObject.name}");
-            ActionCardController.Instance.RemoveSelectedCard(); 
+            ActionCardController.Instance.RemoveSelectedCard();
+
+            ExecuteAttack(player, target); 
+            
+            StartEnemyTurn(); 
         }
     }
 

@@ -251,6 +251,107 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!1001 &90758036
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1259396635}
+    m_Modifications:
+    - target: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -825
+      objectReference: {fileID: 0}
+    - target: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6589815750927327280, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_Name
+      value: Action Card UI Model
+      objectReference: {fileID: 0}
+    - target: {fileID: 6589815750927327280, guid: 2977ad637267282418017126de3e84b0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2977ad637267282418017126de3e84b0, type: 3}
 --- !u!1 &167490208
 GameObject:
   m_ObjectHideFlags: 0
@@ -345,9 +446,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '+ Card
-
-'
+  m_text: + Card I
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -766,6 +865,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugging: 0
+  player: {fileID: 60699634}
 --- !u!4 &597521246
 Transform:
   m_ObjectHideFlags: 0
@@ -1024,6 +1124,11 @@ RectTransform:
   m_AnchoredPosition: {x: 747, y: 405}
   m_SizeDelta: {x: 324, y: 184.90002}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!224 &706282842 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 22334463514342091, guid: 2977ad637267282418017126de3e84b0, type: 3}
+  m_PrefabInstance: {fileID: 90758036}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &730155044
 GameObject:
   m_ObjectHideFlags: 0
@@ -1168,7 +1273,7 @@ GameObject:
   - component: {fileID: 814655547}
   - component: {fileID: 814655546}
   m_Layer: 5
-  m_Name: Remove Card
+  m_Name: Add Card 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1449,7 +1554,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
-  m_Children: []
+  m_Children:
+  - {fileID: 706282842}
   m_Father: {fileID: 1948660555}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
@@ -1480,6 +1586,8 @@ MonoBehaviour:
   selectYOffset: 25
   cardMoveUpSpeed: 5
   cardMoveDownSpeed: 3
+  deckLocation: {x: -825, y: 45}
+  discardPileLocation: {x: 0, y: 0}
   currentCardAmount: 0
   maxCardAmount: 0
 --- !u!1 &1322932979
@@ -1539,9 +1647,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '- Card
-
-'
+  m_text: + Card II
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
