@@ -66,6 +66,39 @@ public class ActionCardController : MonoBehaviour
         CalculateTargetLocation();
     }
 
+    private void Update()
+    {
+        CheckMousePosition();
+        CalculateTargetLocation();
+        UpdateCardPosition();
+    }
+
+    // Move the action card to the location they are supposed to be
+    private void UpdateCardPosition()
+    {
+        for (int i = 0; i < actionCardDisplays.Count; i++)
+        {
+            Transform actionCardDisplayTransform = actionCardDisplays[i].transform;
+            Vector3 target = new Vector3(
+                targetXLocation[i],
+                targetYLocation[i],
+                actionCardDisplayTransform.localPosition.z);
+
+            // If the card is returning to the original position
+            if (actionCardDisplays[i].transform.localPosition.y > target.y)
+            {
+                actionCardDisplays[i].transform.localPosition = Vector3.Lerp(actionCardDisplays[i].transform.localPosition, target, cardMoveDownSpeed * Time.deltaTime);
+            }
+            // If the mouse is currently over the action card
+            // Moving up to the desired position
+            else
+            {
+                actionCardDisplays[i].transform.localPosition = Vector3.Lerp(actionCardDisplays[i].transform.localPosition, target, cardMoveUpSpeed * Time.deltaTime);
+            }
+
+        }
+    }
+
     // Initialize with n action cards
     // Wait a certain amount of time between each card
     private IEnumerator InitializeActionCardList(int n)
@@ -120,6 +153,12 @@ public class ActionCardController : MonoBehaviour
         }
     }
 
+    // Remove the last card in the list
+    public void RemoveLastCard()
+    {
+        RemoveCard(actionCardDisplays.Count - 1);
+    }
+
     // Remove card at index "index"
     private void RemoveCard(int index)
     {
@@ -138,39 +177,6 @@ public class ActionCardController : MonoBehaviour
 
         if (debugging)
             Debug.Log($"Action card at index {index} is removed");
-    }
-
-    private void Update()
-    {
-        CheckMousePosition();
-        CalculateTargetLocation();
-        UpdateCardPosition();
-    }
-
-    // Move the action card to the location they are supposed to be
-    private void UpdateCardPosition()
-    {
-        for (int i = 0; i < actionCardDisplays.Count; i++)
-        {
-            Transform actionCardDisplayTransform = actionCardDisplays[i].transform;
-            Vector3 target = new Vector3(
-                targetXLocation[i],
-                targetYLocation[i],
-                actionCardDisplayTransform.localPosition.z);
-
-            // If the card is returning to the original position
-            if (actionCardDisplays[i].transform.localPosition.y > target.y)
-            {
-                actionCardDisplays[i].transform.localPosition = Vector3.Lerp(actionCardDisplays[i].transform.localPosition, target, cardMoveDownSpeed * Time.deltaTime);
-            }
-            // If the mouse is currently over the action card
-            // Moving up to the desired position
-            else
-            {
-                actionCardDisplays[i].transform.localPosition = Vector3.Lerp(actionCardDisplays[i].transform.localPosition, target, cardMoveUpSpeed * Time.deltaTime);
-            }
-
-        }
     }
 
     // Checks if the player clicks on the action cards
@@ -264,7 +270,6 @@ public class ActionCardController : MonoBehaviour
     {
         actionCardDisplays[index].GetComponent<Image>().sprite = actionCards[index].sprite;
     }
-
     public int GetDraggedCardIndex()
     {
         return draggedCardIndex; 
