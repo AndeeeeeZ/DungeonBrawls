@@ -220,19 +220,21 @@ public class ActionCardController : MonoBehaviour
     }
 
     // Move up the selected card
+    // Move the selected card to the front, above all other cards
     private void SelectCard(int index)
     {
         for (int i = 0; i < actionCardDisplays.Count; i++)
         {
-            targetYLocation[i] = 0f; 
+            targetYLocation[i] = 0f;
+            actionCardDisplays[i].transform.SetSiblingIndex(i); 
             if (i == index || i == draggedCardIndex)
             {
                 targetYLocation[i] = selectYOffset;
+                // Move to the top of all card layers
+                actionCardDisplays[i].transform.SetSiblingIndex(actionCardDisplays.Count);
             }
         }
     }
-
-    // TODO: Update this to dynamically adjust gap if there's too many cards
 
     // Calculates the x position the cards need to move to 
     // In order to maintain the gap while centering the group of cards
