@@ -23,7 +23,7 @@ public class ActionCardController : MonoBehaviour
     private ActionCard[] actionCardScriptableObjects; 
 
     [SerializeField]
-    private float gapBetweenCards, maxHandHorizontalLength, selectYOffset, cardMoveUpSpeed, cardMoveDownSpeed, waitTimeBetweenCards;
+    private float gapBetweenCards, maxHandHorizontalLength, selectYOffset, waitTimeBetweenCards;
 
     [SerializeField]
     private Vector2Int deckLocation, discardPileLocation; 
@@ -31,15 +31,20 @@ public class ActionCardController : MonoBehaviour
     [HideInInspector]
     public int currentCardAmount;
 
-    public int maxCardAmount, initialHandSize; 
+    public int maxCardAmount, initialHandSize, cardMoveUpSpeed, cardMoveDownSpeed; 
     public static ActionCardController Instance { get; private set; }
 
     private PointerEventData pointerEventData;
 
-    private List<GameObject> actionCardDisplays;
-    private List<ActionCard> actionCards;
-    private List<float> targetXLocation; 
-    private List<float> targetYLocation;
+    //private List<GameObject> actionCardDisplays;
+    //private List<ActionCard> actionCards;
+    //private List<float> targetXLocation; 
+    //private List<float> targetYLocation;
+
+    private List<ActionCardContainer> actionCardContainers;
+
+    public ActionCardContainer actionCardContainerPrefab;
+    public GameObject actionCardContainerParent, actionCardUIParent; 
 
     private int draggedCardIndex; 
    
@@ -53,16 +58,17 @@ public class ActionCardController : MonoBehaviour
         }
         Instance = this;
 
-        targetXLocation = new List<float>();
-        targetYLocation = new List<float>();
-        actionCardDisplays = new List<GameObject>(); 
-        actionCards = new List<ActionCard>();
+        //targetXLocation = new List<float>();
+        //targetYLocation = new List<float>();
+        //actionCardDisplays = new List<GameObject>(); 
+        //actionCards = new List<ActionCard>();
+
+        actionCardContainers = new List<ActionCardContainer>();
 
         currentCardAmount = 0; 
         draggedCardIndex = -1;
 
         StartCoroutine(InitializeActionCardList(initialHandSize)); 
-        //InitializeActionCardList(initialHandSize);
         CalculateTargetLocation();
     }
 
@@ -76,26 +82,28 @@ public class ActionCardController : MonoBehaviour
     // Move the action card to the location they are supposed to be
     private void UpdateCardPosition()
     {
-        for (int i = 0; i < actionCardDisplays.Count; i++)
+        for (int i = 0; i < actionCardContainers.Count; i++)
         {
-            Transform actionCardDisplayTransform = actionCardDisplays[i].transform;
-            Vector3 target = new Vector3(
-                targetXLocation[i],
-                targetYLocation[i],
-                actionCardDisplayTransform.localPosition.z);
+            //Transform actionCardDisplayTransform = actionCardContainers[i].actionCardDisplay.transform;
+            //Vector3 target = new Vector3(
+            //    actionCardContainers[i].targetXLocation,
+            //    actionCardContainers[i].targetYLocation,
+            //    actionCardDisplayTransform.localPosition.z);
 
-            // If the card is returning to the original position
-            if (actionCardDisplays[i].transform.localPosition.y > target.y)
-            {
-                actionCardDisplays[i].transform.localPosition = Vector3.Lerp(actionCardDisplays[i].transform.localPosition, target, cardMoveDownSpeed * Time.deltaTime);
-            }
-            // If the mouse is currently over the action card
-            // Moving up to the desired position
-            else
-            {
-                actionCardDisplays[i].transform.localPosition = Vector3.Lerp(actionCardDisplays[i].transform.localPosition, target, cardMoveUpSpeed * Time.deltaTime);
-            }
+            //// If the card is returning to the original position
+            //if (actionCardDisplays[i].transform.localPosition.y > target.y)
+            //{
+            //    actionCardDisplays[i].transform.localPosition = Vector3.Lerp(actionCardDisplays[i].transform.localPosition, target, cardMoveDownSpeed * Time.deltaTime);
+            //}
+            //// If the mouse is currently over the action card
+            //// Moving up to the desired position
+            //else
+            //{
+            //    actionCardDisplays[i].transform.localPosition = Vector3.Lerp(actionCardDisplays[i].transform.localPosition, target, cardMoveUpSpeed * Time.deltaTime);
+            //}
 
+            // CHECK: Does this really need to be called from this class? 
+            actionCardContainers[i].UpdateCardDisplay();
         }
     }
 
@@ -113,7 +121,7 @@ public class ActionCardController : MonoBehaviour
     // Add a card of the Scriptable Object of index cardObjectIndex at the end of the list
     public void AddCard(int cardObjectIndex)
     {
-        AddCard(actionCardDisplays.Count, cardObjectIndex);
+        AddCard(actionCardContainers.Count, cardObjectIndex);
     }
 
     // Add/Instantiate a card at index "index" of the Scriptable Object with the corresponding cardObjectIndex
@@ -124,15 +132,17 @@ public class ActionCardController : MonoBehaviour
             Debug.LogWarning("Current card amount reached the max hand size");
             return; 
         }
-        targetXLocation.Add(0f);
-        targetYLocation.Add(0f);
-        actionCardDisplays.Add(Instantiate(actionCardUIPrefab, this.transform));
-        actionCards.Add(actionCardScriptableObjects[cardObjectIndex]);
+
+        //actionCardDisplays.Add(Instantiate(actionCardUIPrefab, this.transform));
+        //actionCards.Add(actionCardScriptableObjects[cardObjectIndex]);
+
+        actionCardContainers.Add(Instantiate(actionCardContainerPrefab, actionCardContainerParent.transform));
+        actionCardContainers[actionCardContainers.Count - 1].ReceiveInfo(actionCardUIPrefab, actionCardUIParent, deckLocation.x, deckLocation.y, actionCardScriptableObjects[cardObjectIndex]); 
         currentCardAmount++;
         
-        // Spawns new card at deck location
-        actionCardDisplays[index].transform.localPosition = 
-            new Vector3(deckLocation.x, deckLocation.y, 0); 
+        //// Spawns new card at deck location
+        //actionCardDisplays[index].transform.localPosition = 
+        //    new Vector3(deckLocation.x, deckLocation.y, 0); 
 
         UpdateDisplaySprite(index); 
 
@@ -156,25 +166,20 @@ public class ActionCardController : MonoBehaviour
     // Remove the last card in the list
     public void RemoveLastCard()
     {
-        RemoveCard(actionCardDisplays.Count - 1);
+        RemoveCard(actionCardContainers.Count - 1);
     }
 
     // Remove card at index "index"
     private void RemoveCard(int index)
     {
-        if (index >= actionCardDisplays.Count)
+        if (index >= actionCardContainers.Count)
         {
             Debug.LogWarning("Action card index out of bound");
             return; 
         }
-
-        Destroy(actionCardDisplays[index]);
-        targetXLocation.RemoveAt(index); 
-        targetYLocation.RemoveAt(index);
-        actionCardDisplays.RemoveAt(index);
-        actionCards.RemoveAt(index);
         currentCardAmount--;
-
+        actionCardContainers[index].DestorySelf();
+        actionCardContainers.RemoveAt(index);
         if (debugging)
             Debug.Log($"Action card at index {index} is removed");
     }
@@ -196,7 +201,7 @@ public class ActionCardController : MonoBehaviour
             // Check the index of the selected action card
             for (int i = 0; i < currentCardAmount; i++)
             {
-                if (actionCardDisplays[i] == result.gameObject)
+                if (actionCardContainers[i].actionCardDisplay == result.gameObject)
                 {
                     if (debugging)
                     {
@@ -229,15 +234,15 @@ public class ActionCardController : MonoBehaviour
     // Move the selected card to the front, above all other cards
     private void SelectCard(int index)
     {
-        for (int i = 0; i < actionCardDisplays.Count; i++)
+        for (int i = 0; i < actionCardContainers.Count; i++)
         {
-            targetYLocation[i] = 0f;
-            actionCardDisplays[i].transform.SetSiblingIndex(i); 
+            actionCardContainers[i].targetYLocation = 0f; 
+            actionCardContainers[i].actionCardDisplay.transform.SetSiblingIndex(i); 
             if (i == index || i == draggedCardIndex)
             {
-                targetYLocation[i] = selectYOffset;
+                actionCardContainers[i].targetYLocation = selectYOffset;
                 // Move to the top of all card layers
-                actionCardDisplays[i].transform.SetSiblingIndex(actionCardDisplays.Count);
+                actionCardContainers[i].actionCardDisplay.transform.SetSiblingIndex(actionCardContainers.Count);
             }
         }
     }
@@ -259,16 +264,16 @@ public class ActionCardController : MonoBehaviour
             gap = maxHandHorizontalLength / (currentCardAmount - 1);     
         }
 
-        targetXLocation[0] = -(totalDistance / 2f); 
+        actionCardContainers[0].targetXLocation = -(totalDistance / 2f); 
 
         for (int i = 1; i < currentCardAmount; i++)
         {
-            targetXLocation[i] = targetXLocation[i-1] + gap;    
+            actionCardContainers[i].targetXLocation = actionCardContainers[i-1].targetXLocation + gap;    
         }
     }
     private void UpdateDisplaySprite(int index)
     {
-        actionCardDisplays[index].GetComponent<Image>().sprite = actionCards[index].sprite;
+        actionCardContainers[index].UpdateSprite(); 
     }
     public int GetDraggedCardIndex()
     {
