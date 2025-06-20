@@ -17,8 +17,9 @@ public class ActionCardController : MonoBehaviour
     private GraphicRaycaster raycaster;
 
     [SerializeField]
-    private GameObject actionCardUIPrefab;
+    private GameObject actionCardUIPrefab, actionCardContainerPrefab, actionCardContainerParent, actionCardUIParent;
 
+    // TODO: Change this to like a dictionary thing
     [SerializeField]
     private ActionCard[] actionCardScriptableObjects; 
 
@@ -34,20 +35,10 @@ public class ActionCardController : MonoBehaviour
     public int maxCardAmount, initialHandSize, cardMoveUpSpeed, cardMoveDownSpeed; 
     public static ActionCardController Instance { get; private set; }
 
-    private PointerEventData pointerEventData;
-
-    //private List<GameObject> actionCardDisplays;
-    //private List<ActionCard> actionCards;
-    //private List<float> targetXLocation; 
-    //private List<float> targetYLocation;
-
     private List<ActionCardContainer> actionCardContainers;
 
-    public ActionCardContainer actionCardContainerPrefab;
-    public GameObject actionCardContainerParent, actionCardUIParent; 
-
     private int draggedCardIndex; 
-   
+    private PointerEventData pointerEventData;
 
     private void Start()
     {
@@ -57,11 +48,6 @@ public class ActionCardController : MonoBehaviour
             return;
         }
         Instance = this;
-
-        //targetXLocation = new List<float>();
-        //targetYLocation = new List<float>();
-        //actionCardDisplays = new List<GameObject>(); 
-        //actionCards = new List<ActionCard>();
 
         actionCardContainers = new List<ActionCardContainer>();
 
@@ -84,27 +70,12 @@ public class ActionCardController : MonoBehaviour
     {
         for (int i = 0; i < actionCardContainers.Count; i++)
         {
-            //Transform actionCardDisplayTransform = actionCardContainers[i].actionCardDisplay.transform;
-            //Vector3 target = new Vector3(
-            //    actionCardContainers[i].targetXLocation,
-            //    actionCardContainers[i].targetYLocation,
-            //    actionCardDisplayTransform.localPosition.z);
-
-            //// If the card is returning to the original position
-            //if (actionCardDisplays[i].transform.localPosition.y > target.y)
-            //{
-            //    actionCardDisplays[i].transform.localPosition = Vector3.Lerp(actionCardDisplays[i].transform.localPosition, target, cardMoveDownSpeed * Time.deltaTime);
-            //}
-            //// If the mouse is currently over the action card
-            //// Moving up to the desired position
-            //else
-            //{
-            //    actionCardDisplays[i].transform.localPosition = Vector3.Lerp(actionCardDisplays[i].transform.localPosition, target, cardMoveUpSpeed * Time.deltaTime);
-            //}
-
-            // CHECK: Does this really need to be called from this class? 
             actionCardContainers[i].UpdateCardDisplay();
         }
+    }
+    private void UpdateDisplaySprite(int index)
+    {
+        actionCardContainers[index].UpdateSprite();
     }
 
     // Initialize with n action cards
@@ -133,17 +104,15 @@ public class ActionCardController : MonoBehaviour
             return; 
         }
 
-        //actionCardDisplays.Add(Instantiate(actionCardUIPrefab, this.transform));
-        //actionCards.Add(actionCardScriptableObjects[cardObjectIndex]);
+        // Have to instantiate an object for action card container because unity doesn't allow creating monobehaviour object with the "new" keyword
+        actionCardContainers.Add(Instantiate(actionCardContainerPrefab, actionCardContainerParent.transform).GetComponent<ActionCardContainer>());
 
-        actionCardContainers.Add(Instantiate(actionCardContainerPrefab, actionCardContainerParent.transform));
-        actionCardContainers[actionCardContainers.Count - 1].ReceiveInfo(actionCardUIPrefab, actionCardUIParent, deckLocation.x, deckLocation.y, actionCardScriptableObjects[cardObjectIndex]); 
-        currentCardAmount++;
+        actionCardContainers[actionCardContainers.Count - 1].ReceiveInfo(
+            actionCardUIPrefab, actionCardUIParent, 
+            deckLocation.x, deckLocation.y, 
+            actionCardScriptableObjects[cardObjectIndex]); 
         
-        //// Spawns new card at deck location
-        //actionCardDisplays[index].transform.localPosition = 
-        //    new Vector3(deckLocation.x, deckLocation.y, 0); 
-
+        currentCardAmount++;
         UpdateDisplaySprite(index); 
 
         if (debugging)
@@ -159,7 +128,7 @@ public class ActionCardController : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("No card is selected"); 
+            Debug.LogWarning("No card is selected while trying to remove card"); 
         }
     }
 
@@ -201,7 +170,8 @@ public class ActionCardController : MonoBehaviour
             // Check the index of the selected action card
             for (int i = 0; i < currentCardAmount; i++)
             {
-                if (actionCardContainers[i].actionCardDisplay == result.gameObject)
+                if (actionCardContainers[i].actionCardDisplay == result.gameObject 
+                    && !InputSystem.Instance.IsDraggingACard())
                 {
                     if (debugging)
                     {
@@ -271,10 +241,7 @@ public class ActionCardController : MonoBehaviour
             actionCardContainers[i].targetXLocation = actionCardContainers[i-1].targetXLocation + gap;    
         }
     }
-    private void UpdateDisplaySprite(int index)
-    {
-        actionCardContainers[index].UpdateSprite(); 
-    }
+
     public int GetDraggedCardIndex()
     {
         return draggedCardIndex; 

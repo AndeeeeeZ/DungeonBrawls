@@ -9,13 +9,13 @@ public class ActionCardContainer : MonoBehaviour
     //[HideInInspector]
     public ActionCard actionCardScriptableObject;
 
-    
     public float targetXLocation, targetYLocation, 
                  targetXScale, targetYScale;
 
     [SerializeField]
     private float moveUpSpeed, moveDownSpeed;
 
+    // A fake constructor since MonoBehaviour class can't be created with the "new" keyword
     public void ReceiveInfo(GameObject actionCardUIPrefab, GameObject parentObject, float spawnX, float spawnY, ActionCard actionCardObject)
     {
         actionCardDisplay = Instantiate(actionCardUIPrefab, parentObject.transform);
@@ -36,6 +36,7 @@ public class ActionCardContainer : MonoBehaviour
                     targetYLocation,
                     actionCardDisplay.transform.localPosition.z);
         
+        // Moves at different speed depending moving up or down
         if (actionCardDisplay.transform.localPosition.y > target.y)
         {
             actionCardDisplay.transform.localPosition = Vector3.Lerp(actionCardDisplay.transform.localPosition, target, moveUpSpeed * Time.deltaTime); 
@@ -46,11 +47,14 @@ public class ActionCardContainer : MonoBehaviour
         }
     }
 
+    // Update the action card display to match that of the action card scriptable object
     public void UpdateSprite() 
     {
         actionCardDisplay.GetComponent<Image>().sprite = actionCardScriptableObject.sprite; 
     }
 
+    // Remove self and the action card display
+    // TODO: Add the animation for moving to the discard pile here
     public void DestorySelf()
     {
         Destroy(actionCardDisplay);

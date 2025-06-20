@@ -1967,6 +1967,9 @@ MonoBehaviour:
   eventSystem: {fileID: 730155046}
   raycaster: {fileID: 1948660552}
   actionCardUIPrefab: {fileID: 6589815750927327280, guid: 2977ad637267282418017126de3e84b0, type: 3}
+  actionCardContainerPrefab: {fileID: 3349975224904096131, guid: 969ae645349b7364dab7d329eb898686, type: 3}
+  actionCardContainerParent: {fileID: 340618415}
+  actionCardUIParent: {fileID: 2037444232}
   actionCardScriptableObjects:
   - {fileID: 11400000, guid: 51b9bcd7b3ed55645861f10798e15769, type: 2}
   - {fileID: 11400000, guid: 91e617b7c98b97c4698b405ec7bc3604, type: 2}
@@ -1981,9 +1984,6 @@ MonoBehaviour:
   initialHandSize: 3
   cardMoveUpSpeed: 5
   cardMoveDownSpeed: 3
-  actionCardContainerPrefab: {fileID: 1236161868014100877, guid: 969ae645349b7364dab7d329eb898686, type: 3}
-  actionCardContainerParent: {fileID: 340618415}
-  actionCardUIParent: {fileID: 2037444232}
 --- !u!1 &1268353487
 GameObject:
   m_ObjectHideFlags: 0
