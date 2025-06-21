@@ -2,19 +2,21 @@ using UnityEngine;
 
 public class Action
 {
-    public Vector2Int movement;
-    public Vector2Int targetLocation; 
+    // Local Position
+    public Vector2Int targetMovementDirection;
+    // Global Position
+    public Vector2Int targetAttackLocation; 
     public ActionType actionType;
-    public GameObject target; 
+    // public GameObject target; 
     public Action(ActionType actionType)
     {
         this.actionType = actionType; 
     }
 
-    public Action(ActionType actionType, GameObject target)
+    public Action(ActionType actionType, Vector2Int targetAttackLocation)
     {
         this.actionType = actionType;
-        this.target = target;
+        this.targetAttackLocation = targetAttackLocation;
     }
 }
 

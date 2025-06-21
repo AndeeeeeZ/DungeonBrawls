@@ -110,4 +110,27 @@ public class BattleSystem : MonoBehaviour
         }
         return null; 
     }
+
+    public Character GetCharacterAt(int x, int y)
+    {
+        Collider2D hit = Physics2D.OverlapPoint(new Vector3(x, y, 0f));
+        if (hit != null)
+        {
+            if (hit.CompareTag("Character") && hit)
+            {
+                CharacterMovement characterMovement = hit.GetComponent<CharacterMovement>();
+                if (characterMovement != null)
+                {
+                    if (characterMovement.TruePosition().x != x || characterMovement.TruePosition().y != y)
+                    {
+                        if (debugging)
+                            Debug.Log($"Despite there seens to be a character at ({x},{y}), the true position of the character is not there");
+                        return null; 
+                    }
+                }
+                return hit.GetComponent<Character>();
+            }
+        }
+        return null; 
+    }
 }

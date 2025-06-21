@@ -1,8 +1,6 @@
-using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using System; 
 using UnityEngine.U2D.Animation;
-using Unity.VisualScripting;
 
 public class EnemyBehavior : MonoBehaviour
 {
@@ -21,7 +19,8 @@ public class EnemyBehavior : MonoBehaviour
     [SerializeField]
     private SpriteResolver spriteResolver;
 
-    private EnemyStat enemyStat; 
+    private EnemyStat enemyStat;
+    private PlayerStats targetPlayer; 
     
     private string spriteResolverLabel = "Indicators";
     private string spriteName; 
@@ -44,7 +43,10 @@ public class EnemyBehavior : MonoBehaviour
         {
             // Note this might cause a bug if PlayerStats and CharacterMovement components are not on the same game object as the player collider
             if (hit.GetComponent<PlayerStats>() != null && hit.GetComponent<CharacterMovement>() != null)
-            {                
+            {   
+                if(targetPlayer == null) 
+                    targetPlayer = hit.GetComponent<PlayerStats>(); 
+
                 // Get player/target's position
                 Vector3 targetLocation = hit.GetComponent<CharacterMovement>().movePoint.transform.position;
 
@@ -57,11 +59,11 @@ public class EnemyBehavior : MonoBehaviour
                 // Going to attack player if in range
                 if (xDiff == 0f && Mathf.Abs(yDiff) <= attackRange || yDiff == 0f && Mathf.Abs(xDiff) <= attackRange)
                 {
-                    Attack(new Vector2Int((int)targetLocation.x, (int)targetLocation.y), hit.gameObject); 
+                    Attack(new Vector2Int((int)targetLocation.x, (int)targetLocation.y)); 
                 }
                 else
                 {
-                    Move(xDiff, yDiff, hit.gameObject);
+                    Move(xDiff, yDiff);
                 }
                 UpdateActionIndicator();
             }
@@ -87,20 +89,35 @@ public class EnemyBehavior : MonoBehaviour
     public void Act()
     {
         // Checks if the next action is still reasonable after player's new action
-        if(nextAction != null && CheckAction(nextAction.actionType))
+        if(nextAction != null)
         {
             if (nextAction.actionType == ActionType.MOVEMENT)
             {
+                if (BattleSystem.Instance.GetCharacterAt((int)transform.position.x + nextAction.targetMovementDirection.x, 
+                                                         (int)transform.position.y + nextAction.targetMovementDirection.y) != null)
+                {
+                    if (debugging)
+                        Debug.Log("Enemy decides to change movement because player gets in the way");
+
+                    SelectNextMove();
+                    return; 
+                }
                 // TODO: change it so that the enemy wouldn't away if the character moved to another location that looks weird if the enemy moved to the origional planned location
-                enemyMovement.Move(nextAction.movement.x, nextAction.movement.y);
+                enemyMovement.Move(nextAction.targetMovementDirection.x, nextAction.targetMovementDirection.y);
                 
                 if (debugging)
-                    Debug.Log($"Enemy moves by {nextAction.movement.x}, {nextAction.movement.y}");
+                    Debug.Log($"Enemy moves by {nextAction.targetMovementDirection.x}, {nextAction.targetMovementDirection.y}");
             }
             else if (nextAction.actionType == ActionType.ATTACK)
             {
-                // TODO: attack if the target is still in range
-                BattleSystem.Instance.ExecuteAttack(enemyStat, nextAction.target.GetComponent<PlayerStats>()); 
+                Character target = BattleSystem.Instance.GetCharacterAt(nextAction.targetAttackLocation.x, nextAction.targetAttackLocation.y);
+                if (target != null)
+                    BattleSystem.Instance.ExecuteAttack(enemyStat, target);
+                else
+                {
+                    if (debugging)
+                        Debug.Log("enemy attack missed");
+                }
             }
         }
         else
@@ -112,54 +129,54 @@ public class EnemyBehavior : MonoBehaviour
         }
     }
 
-    // Checks if the character's movement is still resonable
-    private bool CheckAction(ActionType actionType)
-    {
-        switch (actionType) 
-        {
-            case ActionType.MOVEMENT:
-                // Don't move if a character gets in the way
+    //// Checks if the character's movement is still resonable
+    //private bool CheckAction()
+    //{
+    //    switch (nextAction.actionType) 
+    //    {
+    //        case ActionType.MOVEMENT:
+    //            // Don't move if a character gets in the way
                 
-                // TODO: checks again by detect if currently there's anything there
-                // because there's currently a bug where the two enemy will overlap
+    //            // TODO: checks again by detect if currently there's anything there
+    //            // because there's currently a bug where the two enemy will overlap
 
-                Vector2 moveLocation = nextAction.movement + GetCurrentPosition();
-                if (nextAction.target.GetComponent<CharacterMovement>().TruePosition() == moveLocation)
-                {
-                    if (debugging)
-                        Debug.Log("Enemy decides to change movement because player gets in the way"); 
+    //            Vector2 moveLocation = nextAction.movement + GetCurrentPosition();
+    //            if (nextAction.target.GetComponent<CharacterMovement>().TruePosition() == moveLocation)
+    //            {
+    //                if (debugging)
+    //                    Debug.Log("Enemy decides to change movement because player gets in the way"); 
 
-                    SelectNextMove();
-                    return false; 
-                }
-                break; 
+    //                SelectNextMove();
+    //                return false; 
+    //            }
+    //            break; 
 
-            case ActionType.ATTACK:
-                // Don't attack if target character moved to a new location
+    //        case ActionType.ATTACK:
+    //            // Don't attack if target character moved to a new location
 
-                if (nextAction.targetLocation != nextAction.target.GetComponent<CharacterMovement>().TruePosition())
-                {
-                    if (debugging)
-                        Debug.Log("Enemy decides to not attack because player is no long in the same position"); 
+    //            if (nextAction.targetLocation != nextAction.target.GetComponent<CharacterMovement>().TruePosition())
+    //            {
+    //                if (debugging)
+    //                    Debug.Log("Enemy decides to not attack because player is no long in the same position"); 
 
-                    SelectNextMove();
-                    return false; 
-                }
-                break; 
-        }
-        return true; 
-    }
+    //                SelectNextMove();
+    //                return false; 
+    //            }
+    //            break; 
+    //    }
+    //    return true; 
+    //}
 
     // Decides where the character should move based on the target character's position
     // TODO: get a better path-finding
     // TODO: there's a bug where the character would still move up after player moved down
-    private void Move(float xDiff, float yDiff, GameObject target)
+    private void Move(float xDiff, float yDiff)
     {
-        nextAction = new Action(ActionType.MOVEMENT, target);
+        nextAction = new Action(ActionType.MOVEMENT);
         // Move towards player
         if (Mathf.Abs(xDiff) > Mathf.Abs(yDiff))
         {
-            nextAction.movement.x = (int)Mathf.Clamp(xDiff, -1, 1);
+            nextAction.targetMovementDirection.x = (int)Mathf.Clamp(xDiff, -1, 1);
             if (xDiff > 0)
                 spriteName = "Right";
             else if (xDiff < 0)
@@ -167,7 +184,7 @@ public class EnemyBehavior : MonoBehaviour
         }
         else
         {
-            nextAction.movement.y = (int)Mathf.Clamp(yDiff, -1, 1);
+            nextAction.targetMovementDirection.y = (int)Mathf.Clamp(yDiff, -1, 1);
             if (yDiff > 0)
                 spriteName = "Up";
             if (yDiff < 0)
@@ -176,10 +193,10 @@ public class EnemyBehavior : MonoBehaviour
     }
 
     // Decides to attack
-    private void Attack(Vector2Int targetLocation, GameObject target)
+    private void Attack(Vector2Int targetAttackLocation)
     {
-        nextAction = new Action(ActionType.ATTACK, target); 
-        nextAction.targetLocation = targetLocation;
+        nextAction = new Action(ActionType.ATTACK); 
+        nextAction.targetAttackLocation = targetAttackLocation;
         spriteName = "Attack";
     }
 

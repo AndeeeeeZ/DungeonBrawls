@@ -36,8 +36,6 @@ public class Character : MonoBehaviour
 
     #endregion
 
-
-
     public void ReduceHealthBy(int amount)
     {
         currentHP -= amount; 
