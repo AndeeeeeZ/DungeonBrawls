@@ -9,11 +9,9 @@ public class ActionCardContainer : MonoBehaviour
     //[HideInInspector]
     public ActionCard actionCardScriptableObject;
 
-    public float targetXLocation, targetYLocation, 
-                 targetXScale, targetYScale;
+    public float targetXLocation, targetYLocation, targetScale;
 
-    [SerializeField]
-    private float moveUpSpeed, moveDownSpeed;
+    private float moveUpSpeed, moveDownSpeed, scaleSpeed;
 
     // A fake constructor since MonoBehaviour class can't be created with the "new" keyword
     public void ReceiveInfo(GameObject actionCardUIPrefab, GameObject parentObject, float spawnX, float spawnY, ActionCard actionCardObject)
@@ -26,24 +24,31 @@ public class ActionCardContainer : MonoBehaviour
     private void Start()
     {
         moveUpSpeed = ActionCardController.Instance.cardMoveUpSpeed;
-        moveDownSpeed = ActionCardController.Instance.cardMoveDownSpeed; 
+        moveDownSpeed = ActionCardController.Instance.cardMoveDownSpeed;
+        scaleSpeed = ActionCardController.Instance.cardScaleSpeed; 
     }
 
     public void UpdateCardDisplay()
     {
-        Vector3 target = new Vector3(
+        Vector3 transformTarget = new Vector3(
                     targetXLocation,
                     targetYLocation,
                     actionCardDisplay.transform.localPosition.z);
-        
+
+        Vector3 scaleTarget = new Vector3(targetScale, targetScale, targetScale);
+
+        actionCardDisplay.transform.localScale = Vector3.Lerp(actionCardDisplay.transform.localScale, scaleTarget, scaleSpeed * Time.deltaTime);  
+
         // Moves at different speed depending moving up or down
-        if (actionCardDisplay.transform.localPosition.y > target.y)
+        if (actionCardDisplay.transform.localPosition.y > transformTarget.y)
         {
-            actionCardDisplay.transform.localPosition = Vector3.Lerp(actionCardDisplay.transform.localPosition, target, moveUpSpeed * Time.deltaTime); 
+            actionCardDisplay.transform.localPosition 
+                = Vector3.Lerp(actionCardDisplay.transform.localPosition, transformTarget, moveUpSpeed * Time.deltaTime); 
         }
         else
         {
-            actionCardDisplay.transform.localPosition = Vector3.Lerp(actionCardDisplay.transform.localPosition, target, moveDownSpeed * Time.deltaTime);
+            actionCardDisplay.transform.localPosition 
+                = Vector3.Lerp(actionCardDisplay.transform.localPosition, transformTarget, moveDownSpeed * Time.deltaTime);
         }
     }
 

@@ -24,7 +24,7 @@ public class ActionCardController : MonoBehaviour
     private ActionCard[] actionCardScriptableObjects; 
 
     [SerializeField]
-    private float gapBetweenCards, maxHandHorizontalLength, selectYOffset, waitTimeBetweenCards;
+    private float gapBetweenCards, maxHandHorizontalLength, selectYOffset, selectScaleUp, waitTimeBetweenCards;
 
     [SerializeField]
     private Vector2Int deckLocation, discardPileLocation; 
@@ -32,7 +32,7 @@ public class ActionCardController : MonoBehaviour
     [HideInInspector]
     public int currentCardAmount;
 
-    public int maxCardAmount, initialHandSize, cardMoveUpSpeed, cardMoveDownSpeed; 
+    public int maxCardAmount, initialHandSize, cardMoveUpSpeed, cardMoveDownSpeed, cardScaleSpeed; 
     public static ActionCardController Instance { get; private set; }
 
     private List<ActionCardContainer> actionCardContainers;
@@ -60,8 +60,11 @@ public class ActionCardController : MonoBehaviour
 
     private void Update()
     {
-        CheckMousePosition();
         CalculateTargetLocation();
+
+        // This must come after the CalculateTargetLocation to override some location
+        CheckMousePosition();
+        
         UpdateCardPosition();
     }
 
@@ -206,15 +209,26 @@ public class ActionCardController : MonoBehaviour
     {
         for (int i = 0; i < actionCardContainers.Count; i++)
         {
-            actionCardContainers[i].targetYLocation = 0f; 
-            actionCardContainers[i].actionCardDisplay.transform.SetSiblingIndex(i); 
-            if (i == index || i == draggedCardIndex)
-            {
-                actionCardContainers[i].targetYLocation = selectYOffset;
-                // Move to the top of all card layers
-                actionCardContainers[i].actionCardDisplay.transform.SetSiblingIndex(actionCardContainers.Count);
-            }
+            actionCardContainers[i].targetYLocation = 0f;
+            actionCardContainers[i].actionCardDisplay.transform.SetSiblingIndex(i);
+            actionCardContainers[i].targetScale = 1f;
         }
+
+        // Had to do this instead of putting it inside the for-loop 
+        // to avoid the bug where the last card stayed at the button of the hierarchy
+        int selectedIndex;
+        if (index != -1)
+            selectedIndex = index;
+        else if (draggedCardIndex != -1)
+            selectedIndex = draggedCardIndex;
+        else
+            return;
+
+        // If there's a card that's being selected or dragged:
+        actionCardContainers[selectedIndex].targetYLocation = selectYOffset;
+        actionCardContainers[selectedIndex].targetScale = selectScaleUp;
+        // Move that card to the top of all card layers
+        actionCardContainers[selectedIndex].actionCardDisplay.transform.SetAsLastSibling();
     }
 
     // Calculates the x position the cards need to move to 

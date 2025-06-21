@@ -1963,7 +1963,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85ae13c8499d202458704bb8061eafd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugging: 1
+  debugging: 0
   eventSystem: {fileID: 730155046}
   raycaster: {fileID: 1948660552}
   actionCardUIPrefab: {fileID: 6589815750927327280, guid: 2977ad637267282418017126de3e84b0, type: 3}
@@ -1975,7 +1975,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 91e617b7c98b97c4698b405ec7bc3604, type: 2}
   gapBetweenCards: 200
   maxHandHorizontalLength: 1000
-  selectYOffset: 30
+  selectYOffset: 50
+  selectScaleUp: 1.2
   waitTimeBetweenCards: 0.25
   deckLocation: {x: -800, y: 60}
   discardPileLocation: {x: 0, y: 0}
@@ -1984,6 +1985,7 @@ MonoBehaviour:
   initialHandSize: 3
   cardMoveUpSpeed: 5
   cardMoveDownSpeed: 3
+  cardScaleSpeed: 2
 --- !u!1 &1268353487
 GameObject:
   m_ObjectHideFlags: 0
