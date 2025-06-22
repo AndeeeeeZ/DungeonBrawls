@@ -11,7 +11,7 @@ public class ActionCardContainer : MonoBehaviour
 
     public float targetXLocation, targetYLocation, targetScale;
 
-    private float moveUpSpeed, moveDownSpeed, scaleSpeed;
+    private float moveUpSpeed, moveDownSpeed, scaleUpSpeed, scaleDownSpeed;
 
     // A fake constructor since MonoBehaviour class can't be created with the "new" keyword
     public void ReceiveInfo(GameObject actionCardUIPrefab, GameObject parentObject, float spawnX, float spawnY, ActionCard actionCardObject)
@@ -25,7 +25,8 @@ public class ActionCardContainer : MonoBehaviour
     {
         moveUpSpeed = ActionCardController.Instance.cardMoveUpSpeed;
         moveDownSpeed = ActionCardController.Instance.cardMoveDownSpeed;
-        scaleSpeed = ActionCardController.Instance.cardScaleSpeed; 
+        scaleUpSpeed = ActionCardController.Instance.cardScaleUpSpeed;
+        scaleDownSpeed = ActionCardController.Instance.cardScaleDownSpeed;
     }
 
     public void UpdateCardDisplay()
@@ -37,9 +38,17 @@ public class ActionCardContainer : MonoBehaviour
 
         Vector3 scaleTarget = new Vector3(targetScale, targetScale, targetScale);
 
-        actionCardDisplay.transform.localScale = Vector3.Lerp(actionCardDisplay.transform.localScale, scaleTarget, scaleSpeed * Time.deltaTime);  
+        // Scale at different speed depending on scaling up or down
+        if (actionCardDisplay.transform.localScale.x < targetScale)
+        {
+            actionCardDisplay.transform.localScale = Vector3.Lerp(actionCardDisplay.transform.localScale, scaleTarget, scaleUpSpeed * Time.deltaTime);
+        }
+        else
+        {
+            actionCardDisplay.transform.localScale = Vector3.Lerp(actionCardDisplay.transform.localScale, scaleTarget, scaleDownSpeed * Time.deltaTime);
+        }
 
-        // Moves at different speed depending moving up or down
+        // Moves at different speed depending on moving up or down
         if (actionCardDisplay.transform.localPosition.y > transformTarget.y)
         {
             actionCardDisplay.transform.localPosition 

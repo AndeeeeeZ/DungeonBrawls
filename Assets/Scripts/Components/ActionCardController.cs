@@ -32,7 +32,7 @@ public class ActionCardController : MonoBehaviour
     [HideInInspector]
     public int currentCardAmount;
 
-    public int maxCardAmount, initialHandSize, cardMoveUpSpeed, cardMoveDownSpeed, cardScaleSpeed; 
+    public int maxCardAmount, initialHandSize, cardMoveUpSpeed, cardMoveDownSpeed, cardScaleUpSpeed, cardScaleDownSpeed; 
     public static ActionCardController Instance { get; private set; }
 
     private List<ActionCardContainer> actionCardContainers;
@@ -255,6 +255,7 @@ public class ActionCardController : MonoBehaviour
             actionCardContainers[i].targetXLocation = actionCardContainers[i-1].targetXLocation + gap;    
         }
 
+        // If currently dragging a card, the other card will move away from the selected card
         if (draggedCardIndex != -1)
         {
             for (int i = 1; i < draggedCardIndex; i++)
