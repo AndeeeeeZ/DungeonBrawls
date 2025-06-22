@@ -78,11 +78,8 @@ public class CharacterMovement : MonoBehaviour
         // TODO: remove/fix this
         if (hit != null)
         {
-            Debug.LogWarning("Character didn't move because something is in the way"); 
-            if (hit.CompareTag("Character") && hit)
-            {
-
-            }
+            Debug.Log($"{gameObject.name} didn't move because {hit.gameObject.name} is in the way");
+            spriteController?.SetDirection(x, y); 
         }
         // Move target point if it's not going into an obstacle
         else if (!Physics2D.OverlapCircle(moveLocation, 0f, obstacleLayer))

@@ -28,6 +28,13 @@ public class SpriteController : MonoBehaviour
         }
     }
 
+    public void SetDirection(int x, int y)
+    {
+        this.x = x;
+        this.y = y;
+        UpdateAnimator(); 
+        animator.SetTrigger("STOP"); 
+    }
     private void UpdateAnimator()
     {
         animator.SetInteger("X", this.x);
