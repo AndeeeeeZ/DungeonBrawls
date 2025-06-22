@@ -88,6 +88,7 @@ public class EnemyBehavior : MonoBehaviour
     // Execute the action
     public void Act()
     {
+        // TODO: Clean up this code structure
         // Checks if the next action is still reasonable after player's new action
         if(nextAction != null)
         {
@@ -104,6 +105,7 @@ public class EnemyBehavior : MonoBehaviour
                 {
                     if (debugging)
                         Debug.Log("Enemy decides to change movement because player gets in the way");
+                    BattleSystem.Instance.EnterNextTurn();
                 }
                 // TODO: change it so that the enemy wouldn't away if the character moved to another location that looks weird if the enemy moved to the origional planned location   
             }
@@ -118,11 +120,17 @@ public class EnemyBehavior : MonoBehaviour
                 {
                     if (debugging)
                         Debug.Log("Enemy attack missed");
-                }
+                }        
+                BattleSystem.Instance.EnterNextTurn();
             }
-        }          
-        SelectNextMove();
-        BattleSystem.Instance.EnterNextTurn();
+        }
+        else
+        {
+            // If character didn't have a nextAction
+            BattleSystem.Instance.EnterNextTurn();
+        }
+            SelectNextMove();
+
     }
 
     // Decides where the character should move based on the target character's position

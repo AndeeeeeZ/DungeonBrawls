@@ -45,7 +45,6 @@ public class BattleSystem : MonoBehaviour
         if (currentEnemyIndex < 0)
         {
             InputSystem.Instance.StartPlayerTurn();
-            Debug.Log($"It's player's turn, new index set to {currentEnemyIndex}"); 
         }
         else
         {

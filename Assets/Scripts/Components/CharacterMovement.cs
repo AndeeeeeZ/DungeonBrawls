@@ -1,8 +1,12 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Rendering.VirtualTexturing;
 
 public class CharacterMovement : MonoBehaviour
 {
+    [SerializeField]
+    private bool debugging; 
+
     [SerializeField]
     private float stepSize, moveSpeed;
 
@@ -78,7 +82,9 @@ public class CharacterMovement : MonoBehaviour
         // TODO: remove/fix this
         if (hit != null)
         {
-            Debug.Log($"{gameObject.name} didn't move because {hit.gameObject.name} is in the way");
+            if (debugging)
+                Debug.Log($"{gameObject.name} didn't move because {hit.gameObject.name} is in the way");
+            
             spriteController?.SetDirection(x, y); 
         }
         // Move target point if it's not going into an obstacle
@@ -88,6 +94,11 @@ public class CharacterMovement : MonoBehaviour
             spriteController?.StartWalking(x, y);
             moving = true;
             InputSystem.Instance.ChangeInputStateTo(InputState.WAIT_FOR_TURN);
+        }
+        else
+        {
+            if (debugging)
+                Debug.Log($"{gameObject.name} didn't move due to obstacle layer");
         }
     }  
 

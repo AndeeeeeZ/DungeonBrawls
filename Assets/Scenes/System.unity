@@ -150,27 +150,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16618c87897ad5649a74a6acf429de45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugging: 0
   stepSize: 1
   moveSpeed: 5
+  spriteController: {fileID: 599987577}
   movePoint: {fileID: 371996553}
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 64
   PlayerArrivedTargetLocation:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 599987577}
-        m_TargetAssemblyTypeName: SpriteController, Assembly-CSharp
-        m_MethodName: StopWalking
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &60699634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -764,7 +754,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerMovement: {fileID: 60699633}
-  spriteController: {fileID: 599987577}
   OnMouseClick:
     m_PersistentCalls:
       m_Calls:
