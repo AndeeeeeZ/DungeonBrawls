@@ -24,7 +24,7 @@ public class ActionCardController : MonoBehaviour
     private ActionCard[] actionCardScriptableObjects; 
 
     [SerializeField]
-    private float gapBetweenCards, maxHandHorizontalLength, selectYOffset, selectScaleUp, waitTimeBetweenCards;
+    private float gapBetweenCards, maxHandHorizontalLength, selectYOffset, selectXOffset, selectScaleUp, waitTimeBetweenCards;
 
     [SerializeField]
     private Vector2Int deckLocation, discardPileLocation; 
@@ -253,6 +253,18 @@ public class ActionCardController : MonoBehaviour
         for (int i = 1; i < currentCardAmount; i++)
         {
             actionCardContainers[i].targetXLocation = actionCardContainers[i-1].targetXLocation + gap;    
+        }
+
+        if (draggedCardIndex != -1)
+        {
+            for (int i = 1; i < draggedCardIndex; i++)
+            {
+                actionCardContainers[i].targetXLocation -= selectXOffset; 
+            }
+            for (int i = actionCardContainers.Count - 2; i > draggedCardIndex; i--)
+            {
+                actionCardContainers[i].targetXLocation += selectXOffset;
+            }
         }
     }
 

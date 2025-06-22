@@ -1032,7 +1032,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa332a1b2d790594fa6b2680025967ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugging: 1
+  debugging: 0
   player: {fileID: 60699634}
 --- !u!4 &597521246
 Transform:
@@ -1966,12 +1966,13 @@ MonoBehaviour:
   gapBetweenCards: 200
   maxHandHorizontalLength: 1000
   selectYOffset: 50
+  selectXOffset: 30
   selectScaleUp: 1.2
   waitTimeBetweenCards: 0.25
   deckLocation: {x: -800, y: 60}
   discardPileLocation: {x: 0, y: 0}
   currentCardAmount: 0
-  maxCardAmount: 10
+  maxCardAmount: 8
   initialHandSize: 3
   cardMoveUpSpeed: 5
   cardMoveDownSpeed: 3

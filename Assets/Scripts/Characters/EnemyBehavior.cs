@@ -28,7 +28,6 @@ public class EnemyBehavior : MonoBehaviour
     public Action nextAction;
     public void Start()
     {
-        // TODO: disconnect enemybahvior and enemy, or at least remove enemystat from enemy behavior
         enemyStat = GetComponent<EnemyStat>();
         spriteName = "None";
         UpdateActionIndicator();
