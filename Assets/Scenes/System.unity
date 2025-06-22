@@ -784,18 +784,6 @@ MonoBehaviour:
   OnMouseRelease:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 597521245}
-        m_TargetAssemblyTypeName: BattleSystem, Assembly-CSharp
-        m_MethodName: ExecuteActionCard
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1259396636}
         m_TargetAssemblyTypeName: ActionCardController, Assembly-CSharp
         m_MethodName: OnMouseRelease
@@ -1965,6 +1953,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 91e617b7c98b97c4698b405ec7bc3604, type: 2}
   gapBetweenCards: 200
   maxHandHorizontalLength: 1000
+  curveYOffset: 6
+  curveAngle: 2
   selectYOffset: 50
   selectXOffset: 30
   selectScaleUp: 1.2
@@ -1976,7 +1966,8 @@ MonoBehaviour:
   initialHandSize: 3
   cardMoveUpSpeed: 5
   cardMoveDownSpeed: 3
-  cardScaleSpeed: 2
+  cardScaleUpSpeed: 5
+  cardScaleDownSpeed: 3
 --- !u!1 &1268353487
 GameObject:
   m_ObjectHideFlags: 0

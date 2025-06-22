@@ -200,6 +200,15 @@ public class ActionCardController : MonoBehaviour
 
     public void OnMouseRelease()
     {
+        if (InputSystem.Instance.inputState == InputState.GAMEPLAY)
+        {
+            BattleSystem.Instance.ExecuteActionCard();
+            Debug.Log("card used"); 
+        }
+        else
+        {
+            Debug.LogWarning("Action card not executed because it's not player's turn"); 
+        }
         draggedCardIndex = -1;
     }
 

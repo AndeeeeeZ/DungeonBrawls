@@ -7767,8 +7767,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16618c87897ad5649a74a6acf429de45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugging: 0
   stepSize: 1
   moveSpeed: 5
+  spriteController: {fileID: 0}
   movePoint: {fileID: 1201626273}
   obstacleLayer:
     serializedVersion: 2

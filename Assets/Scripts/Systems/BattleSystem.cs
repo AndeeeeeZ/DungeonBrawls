@@ -109,6 +109,10 @@ public class BattleSystem : MonoBehaviour
             ExecuteAttack(player, target);
             EndPlayerTurn(); 
         }
+        else
+        {
+            Debug.Log("Action card target not found"); 
+        }
     }
 
     private EnemyStat GetActionCardTarget()
