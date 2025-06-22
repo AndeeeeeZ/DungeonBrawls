@@ -24,7 +24,7 @@ public class ActionCardController : MonoBehaviour
     private ActionCard[] actionCardScriptableObjects; 
 
     [SerializeField]
-    private float gapBetweenCards, maxHandHorizontalLength, selectYOffset, selectXOffset, selectScaleUp, waitTimeBetweenCards;
+    private float gapBetweenCards, maxHandHorizontalLength, curveYOffset, curveAngle, selectYOffset, selectXOffset, selectScaleUp, waitTimeBetweenCards;
 
     [SerializeField]
     private Vector2Int deckLocation, discardPileLocation; 
@@ -207,15 +207,6 @@ public class ActionCardController : MonoBehaviour
     // Move the selected card to the front, above all other cards
     private void SelectCard(int index)
     {
-        for (int i = 0; i < actionCardContainers.Count; i++)
-        {
-            actionCardContainers[i].targetYLocation = 0f;
-            actionCardContainers[i].actionCardDisplay.transform.SetSiblingIndex(i);
-            actionCardContainers[i].targetScale = 1f;
-        }
-
-        // Had to do this instead of putting it inside the for-loop 
-        // to avoid the bug where the last card stayed at the button of the hierarchy
         int selectedIndex;
         if (index != -1)
             selectedIndex = index;
@@ -229,6 +220,7 @@ public class ActionCardController : MonoBehaviour
         actionCardContainers[selectedIndex].targetScale = selectScaleUp;
         // Move that card to the top of all card layers
         actionCardContainers[selectedIndex].actionCardDisplay.transform.SetAsLastSibling();
+        actionCardContainers[selectedIndex].targetRotation = 0f; 
     }
 
     // Calculates the x position the cards need to move to 
@@ -236,12 +228,21 @@ public class ActionCardController : MonoBehaviour
     private void CalculateTargetLocation()
     {
         if (currentCardAmount == 0)
-            return; 
+            return;
 
-        float totalDistance = (currentCardAmount - 1) * gapBetweenCards;
-        float gap = gapBetweenCards; 
+        // Set to normal position + curve
+        for (int i = 0; i < actionCardContainers.Count; i++)
+        {
+            int indexFromCenter = (int)(actionCardContainers.Count / 2) - i;
+            actionCardContainers[i].targetYLocation = 0f - Mathf.Abs(indexFromCenter) * curveYOffset; 
+            actionCardContainers[i].targetRotation = indexFromCenter * curveAngle;
+            actionCardContainers[i].actionCardDisplay.transform.SetSiblingIndex(i);
+            actionCardContainers[i].targetScale = 1f;
+        }
 
         // Checks if all the cards in hand is going to fit in the desired region
+        float totalDistance = (currentCardAmount - 1) * gapBetweenCards;
+        float gap = gapBetweenCards; 
         if (totalDistance > maxHandHorizontalLength)
         {
             totalDistance = maxHandHorizontalLength;

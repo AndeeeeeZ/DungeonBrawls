@@ -9,7 +9,7 @@ public class ActionCardContainer : MonoBehaviour
     //[HideInInspector]
     public ActionCard actionCardScriptableObject;
 
-    public float targetXLocation, targetYLocation, targetScale;
+    public float targetXLocation, targetYLocation, targetScale, targetRotation;
 
     private float moveUpSpeed, moveDownSpeed, scaleUpSpeed, scaleDownSpeed;
 
@@ -37,6 +37,8 @@ public class ActionCardContainer : MonoBehaviour
                     actionCardDisplay.transform.localPosition.z);
 
         Vector3 scaleTarget = new Vector3(targetScale, targetScale, targetScale);
+
+        actionCardDisplay.transform.localRotation = Quaternion.Euler(0f, 0f, targetRotation); 
 
         // Scale at different speed depending on scaling up or down
         if (actionCardDisplay.transform.localScale.x < targetScale)
