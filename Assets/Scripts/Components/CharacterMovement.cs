@@ -6,6 +6,9 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField]
     private float stepSize, moveSpeed;
 
+    [SerializeField] 
+    private SpriteController spriteController; 
+
     // MovePoint is the point that the character is going to move towards
     // MovePoint is used as the "true" position of the character
     public Transform movePoint;
@@ -14,21 +17,20 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField]
     private LayerMask obstacleLayer;
 
-    public UnityEvent PlayerArrivedTargetLocation; 
+    public UnityEvent PlayerArrivedTargetLocation;
 
-    private Character character;
+
+    // A flag use to prevent detection for arriving at target location to be triggered multiple times
+    private bool moving; 
 
     private void Start()
     {
         // Prevents child moving the parent
         movePoint.parent = null; 
         movePoint.position = transform.position;
-        character = GetComponent<Character>();
-        
-        if (character == null)
-        {
-            Debug.LogWarning("Character missing"); 
-        }
+
+        moving = false; 
+
         if (movePoint == null)
         {
             Debug.LogWarning("Movement point missing");
@@ -37,16 +39,25 @@ public class CharacterMovement : MonoBehaviour
 
     private void Update()
     {
-        if (transform.position != movePoint.position)
+        if (transform.position != movePoint.position && moving)
             MoveTowardTarget(); 
     }
+
     // Moves character towards MovePoint
     private void MoveTowardTarget()
     {
         transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
-        if (transform.position == movePoint.position)
+        if (transform.position == movePoint.position && moving)
         {
-            PlayerArrivedTargetLocation.Invoke(); 
+            moving = false; 
+            PlayerArrivedTargetLocation.Invoke();
+            spriteController?.StopWalking();
+            
+            // TODO: FIX THIS, THIS IS HORRIBLE DESIGN
+            if (gameObject.GetComponent<PlayerStats>() != null)
+                BattleSystem.Instance.EndPlayerTurn(); 
+            else 
+                BattleSystem.Instance.EnterNextTurn();
         }
     }
 
@@ -57,35 +68,30 @@ public class CharacterMovement : MonoBehaviour
         Mathf.Clamp(y, -1, 1);
 
         if (x == 0 && y == 0)
-            return; 
+            return;
 
-        Vector3 moveLocation = movePoint.position + new Vector3(x, y, movePoint.position.z);
+        Vector3 moveLocation = movePoint.position + new Vector3(x * stepSize, y * stepSize, 0f);
 
         // Checks if there is any character at the target location
         Collider2D hit = Physics2D.OverlapPoint(moveLocation);
 
-        // TODO: moving this to a different location / new class
+        // TODO: remove/fix this
         if (hit != null)
         {
+            Debug.LogWarning("Character didn't move because something is in the way"); 
             if (hit.CompareTag("Character") && hit)
             {
-                Character defender = hit.GetComponent<Character>();
-                if (defender != null)
-                {
-                    BattleSystem.Instance.ExecuteAttack(character, defender);
-                }
-                else
-                {
-                    Debug.Log("Character component not detected");
-                }
+
             }
         }
         // Move target point if it's not going into an obstacle
         else if (!Physics2D.OverlapCircle(moveLocation, 0f, obstacleLayer))
         {
             movePoint.Translate(new Vector2(x * stepSize, y * stepSize));
+            spriteController?.StartWalking(x, y);
+            moving = true;
+            InputSystem.Instance.ChangeInputStateTo(InputState.WAIT_FOR_TURN);
         }
-
     }  
 
     public Vector2Int TruePosition()

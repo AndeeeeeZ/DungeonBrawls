@@ -846,6 +846,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  inputState: 0
 --- !u!4 &409181903
 Transform:
   m_ObjectHideFlags: 0
@@ -1042,7 +1043,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa332a1b2d790594fa6b2680025967ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugging: 0
+  debugging: 1
   player: {fileID: 60699634}
 --- !u!4 &597521246
 Transform:

@@ -13,6 +13,7 @@ public class BattleSystem : MonoBehaviour
     public static BattleSystem Instance { get; private set; } 
     private List<EnemyStat> enemies;
 
+    private int currentEnemyIndex; 
     private void Start()
     {
         if (Instance != null && Instance != this)
@@ -37,24 +38,33 @@ public class BattleSystem : MonoBehaviour
         return enemies.Remove(enemy);
     }
 
-    public void StartEnemyTurn()
-    {
-        StartCoroutine(EnemyTurnRoutine()); 
-    }
-
     // Go through the list of enemies in the scene 
     // Each enemy acts and select its next move
-    private IEnumerator EnemyTurnRoutine()
+    public void EnterNextTurn()
     {
-        if (debugging)
-            Debug.Log($"There's currently {enemies.Count} enemies in the map");
-
-        for (int i = enemies.Count - 1; i >= 0; i--)
+        if (currentEnemyIndex < 0)
         {
-            enemies[i].enemyBehavior.Act();
-            enemies[i].enemyBehavior.SelectNextMove();
-            yield return new WaitForSeconds(0.1f); 
+            InputSystem.Instance.StartPlayerTurn();
+            Debug.Log($"It's player's turn, new index set to {currentEnemyIndex}"); 
         }
+        else
+        {
+            if (debugging)
+                Debug.Log($"Enters a new turn, currently {currentEnemyIndex + 1} ememy still need to act before player's turn");
+
+            int actingIndex = currentEnemyIndex;
+            currentEnemyIndex--; 
+            enemies[actingIndex].enemyBehavior.Act();
+            if (debugging)
+                Debug.Log("Enemy acts"); 
+        }
+    }
+
+    // Separated into a different function because it's causing some random bugs
+    public void EndPlayerTurn()
+    {
+        currentEnemyIndex = enemies.Count - 1;
+        EnterNextTurn(); 
     }
 
     // Returns the damage dealt
@@ -81,6 +91,10 @@ public class BattleSystem : MonoBehaviour
                 Debug.Log($"{defender.name} died");
             defender.Die(); 
         }
+
+        if (debugging)
+            Debug.LogWarning("Currently the enter next turn after attack function is included in the execute attack function"); 
+
         return damage; 
     }
 
@@ -93,9 +107,8 @@ public class BattleSystem : MonoBehaviour
             Debug.Log($"An action card is used on {target.gameObject.name}");
             ActionCardController.Instance.RemoveSelectedCard();
 
-            ExecuteAttack(player, target); 
-            
-            StartEnemyTurn(); 
+            ExecuteAttack(player, target);
+            EndPlayerTurn(); 
         }
     }
 

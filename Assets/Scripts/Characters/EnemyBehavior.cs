@@ -94,78 +94,36 @@ public class EnemyBehavior : MonoBehaviour
             if (nextAction.actionType == ActionType.MOVEMENT)
             {
                 if (BattleSystem.Instance.GetCharacterAt((int)transform.position.x + nextAction.targetMovementDirection.x, 
-                                                         (int)transform.position.y + nextAction.targetMovementDirection.y) != null)
+                                                         (int)transform.position.y + nextAction.targetMovementDirection.y) == null)
+                { 
+                    enemyMovement.Move(nextAction.targetMovementDirection.x, nextAction.targetMovementDirection.y);
+                    if (debugging)
+                        Debug.Log($"Enemy moves by {nextAction.targetMovementDirection.x}, {nextAction.targetMovementDirection.y}");
+                }
+                else
                 {
                     if (debugging)
                         Debug.Log("Enemy decides to change movement because player gets in the way");
-
-                    SelectNextMove();
-                    return; 
                 }
-                // TODO: change it so that the enemy wouldn't away if the character moved to another location that looks weird if the enemy moved to the origional planned location
-                enemyMovement.Move(nextAction.targetMovementDirection.x, nextAction.targetMovementDirection.y);
-                
-                if (debugging)
-                    Debug.Log($"Enemy moves by {nextAction.targetMovementDirection.x}, {nextAction.targetMovementDirection.y}");
+                // TODO: change it so that the enemy wouldn't away if the character moved to another location that looks weird if the enemy moved to the origional planned location   
             }
             else if (nextAction.actionType == ActionType.ATTACK)
             {
                 Character target = BattleSystem.Instance.GetCharacterAt(nextAction.targetAttackLocation.x, nextAction.targetAttackLocation.y);
                 if (target != null)
+                {
                     BattleSystem.Instance.ExecuteAttack(enemyStat, target);
+                }
                 else
                 {
                     if (debugging)
-                        Debug.Log("enemy attack missed");
+                        Debug.Log("Enemy attack missed");
                 }
             }
-        }
-        else
-        {
-            SelectNextMove();
-
-            if (debugging)
-                Debug.Log("Enemy chooses next move due to null nextAction"); 
-        }
+        }          
+        SelectNextMove();
+        BattleSystem.Instance.EnterNextTurn();
     }
-
-    //// Checks if the character's movement is still resonable
-    //private bool CheckAction()
-    //{
-    //    switch (nextAction.actionType) 
-    //    {
-    //        case ActionType.MOVEMENT:
-    //            // Don't move if a character gets in the way
-                
-    //            // TODO: checks again by detect if currently there's anything there
-    //            // because there's currently a bug where the two enemy will overlap
-
-    //            Vector2 moveLocation = nextAction.movement + GetCurrentPosition();
-    //            if (nextAction.target.GetComponent<CharacterMovement>().TruePosition() == moveLocation)
-    //            {
-    //                if (debugging)
-    //                    Debug.Log("Enemy decides to change movement because player gets in the way"); 
-
-    //                SelectNextMove();
-    //                return false; 
-    //            }
-    //            break; 
-
-    //        case ActionType.ATTACK:
-    //            // Don't attack if target character moved to a new location
-
-    //            if (nextAction.targetLocation != nextAction.target.GetComponent<CharacterMovement>().TruePosition())
-    //            {
-    //                if (debugging)
-    //                    Debug.Log("Enemy decides to not attack because player is no long in the same position"); 
-
-    //                SelectNextMove();
-    //                return false; 
-    //            }
-    //            break; 
-    //    }
-    //    return true; 
-    //}
 
     // Decides where the character should move based on the target character's position
     // TODO: get a better path-finding
