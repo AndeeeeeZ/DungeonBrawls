@@ -16,6 +16,7 @@ public class EnemyBehavior : MonoBehaviour
     [SerializeField]
     private LayerMask playerLayer;
 
+    // SpriteResolver for action indicator
     [SerializeField]
     private SpriteResolver spriteResolver;
 
@@ -58,11 +59,11 @@ public class EnemyBehavior : MonoBehaviour
                 // Going to attack player if in range
                 if (xDiff == 0f && Mathf.Abs(yDiff) <= attackRange || yDiff == 0f && Mathf.Abs(xDiff) <= attackRange)
                 {
-                    Attack(new Vector2Int((int)targetLocation.x, (int)targetLocation.y)); 
+                    DecideToAttack(new Vector2Int((int)targetLocation.x, (int)targetLocation.y)); 
                 }
                 else
                 {
-                    Move(xDiff, yDiff);
+                    DecideToMove(xDiff, yDiff);
                 }
                 UpdateActionIndicator();
             }
@@ -87,55 +88,65 @@ public class EnemyBehavior : MonoBehaviour
     // Execute the action
     public void Act()
     {
-        // TODO: Clean up this code structure
-        // Checks if the next action is still reasonable after player's new action
-        if(nextAction != null)
+        if (nextAction == null)
         {
-            if (nextAction.actionType == ActionType.MOVEMENT)
-            {
-                if (BattleSystem.Instance.GetCharacterAt((int)transform.position.x + nextAction.targetMovementDirection.x, 
-                                                         (int)transform.position.y + nextAction.targetMovementDirection.y) == null)
-                { 
-                    enemyMovement.Move(nextAction.targetMovementDirection.x, nextAction.targetMovementDirection.y);
-                    if (debugging)
-                        Debug.Log($"Enemy moves by {nextAction.targetMovementDirection.x}, {nextAction.targetMovementDirection.y}");
-                }
-                else
-                {
-                    if (debugging)
-                        Debug.Log("Enemy decides to change movement because player gets in the way");
-                    BattleSystem.Instance.EnterNextTurn();
-                }
-                // TODO: change it so that the enemy wouldn't away if the character moved to another location that looks weird if the enemy moved to the origional planned location   
-            }
-            else if (nextAction.actionType == ActionType.ATTACK)
-            {
-                Character target = BattleSystem.Instance.GetCharacterAt(nextAction.targetAttackLocation.x, nextAction.targetAttackLocation.y);
-                if (target != null)
-                {
-                    BattleSystem.Instance.ExecuteAttack(enemyStat, target);
-                }
-                else
-                {
-                    if (debugging)
-                        Debug.Log("Enemy attack missed");
-                }        
-                BattleSystem.Instance.EnterNextTurn();
-            }
+            BattleSystem.Instance.EnterNextTurn();
+            SelectNextMove();
+            return;
+        }
+
+        switch (nextAction.actionType) 
+        {
+            case ActionType.MOVEMENT:
+                HandleMovementAction(); 
+                break; 
+
+            case ActionType.ATTACK:
+                HandleAttackAction();
+                break; 
+        }
+        SelectNextMove();
+    }
+
+    // Execute the attack action
+    private void HandleAttackAction()
+    {
+        Character target = BattleSystem.Instance.GetCharacterAt(nextAction.targetAttackLocation.x, nextAction.targetAttackLocation.y);
+        if (target != null)
+        {
+            BattleSystem.Instance.ExecuteAttack(enemyStat, target);
         }
         else
         {
-            // If character didn't have a nextAction
+            if (debugging)
+                Debug.Log("Enemy attack missed");
+        }
+        BattleSystem.Instance.EnterNextTurn();
+    }
+
+    // Execute the movement action
+    private void HandleMovementAction()
+    {
+        if (BattleSystem.Instance.GetCharacterAt((int)transform.position.x + nextAction.targetMovementDirection.x,
+                                         (int)transform.position.y + nextAction.targetMovementDirection.y) == null)
+        {
+            // No enter next turn here because it's called when character arrives at target location
+            enemyMovement.Move(nextAction.targetMovementDirection.x, nextAction.targetMovementDirection.y);
+            if (debugging)
+                Debug.Log($"Enemy moves by {nextAction.targetMovementDirection.x}, {nextAction.targetMovementDirection.y}");
+        }
+        else
+        {
+            if (debugging)
+                Debug.Log("Enemy decides to change movement because player gets in the way");
             BattleSystem.Instance.EnterNextTurn();
         }
-            SelectNextMove();
-
     }
 
     // Decides where the character should move based on the target character's position
     // TODO: get a better path-finding
     // TODO: there's a bug where the character would still move up after player moved down
-    private void Move(float xDiff, float yDiff)
+    private void DecideToMove(float xDiff, float yDiff)
     {
         nextAction = new Action(ActionType.MOVEMENT);
         // Move towards player
@@ -158,7 +169,7 @@ public class EnemyBehavior : MonoBehaviour
     }
 
     // Decides to attack
-    private void Attack(Vector2Int targetAttackLocation)
+    private void DecideToAttack(Vector2Int targetAttackLocation)
     {
         nextAction = new Action(ActionType.ATTACK); 
         nextAction.targetAttackLocation = targetAttackLocation;
