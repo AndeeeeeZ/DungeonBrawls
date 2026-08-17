@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Collections;
 
 // Singleton
 public class BattleSystem : MonoBehaviour
@@ -10,10 +9,15 @@ public class BattleSystem : MonoBehaviour
 
     [SerializeField]
     private PlayerStats player; 
-    public static BattleSystem Instance { get; private set; } 
     private List<EnemyStat> enemies;
 
-    private int currentEnemyIndex; 
+    private int currentEnemyIndex;
+
+    public static BattleSystem Instance
+    {
+        get; 
+        private set; 
+    }
     private void Start()
     {
         if (Instance != null && Instance != this)

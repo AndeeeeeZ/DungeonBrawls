@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class EnemyStat: Character
 {
@@ -8,14 +9,15 @@ public class EnemyStat: Character
     [HideInInspector]
     public EnemyBehavior enemyBehavior;
 
-    private BoxCollider2D boxCollider; 
+    private BoxCollider2D boxCollider;
+
+    private bool registered; 
     
     private void Start()
     {
+        registered = false; 
         enemyBehavior = GetComponent<EnemyBehavior>();
         boxCollider = GetComponent<BoxCollider2D>();
-
-        BattleSystem.Instance.RegisterEnemy(this);
 
         HideSelectionIndicator();
 
@@ -27,6 +29,11 @@ public class EnemyStat: Character
 
     private void Update()
     {
+        // Had to do this instead of putting this in start because there's a weird bug caused by the execution order
+        if (!registered)
+        {
+            BattleSystem.Instance.RegisterEnemy(this);
+        }
         UpdateSelectionIndicator();
     }
 
